@@ -44,7 +44,7 @@ for x = 0, 3 do
                 Rng = {0, 0},
             }
             
-            slk.ability.ANcl:new(passiveIds[i]) {
+            slk.ability.Amgl:new(passiveIds[i]) {
                 Name = '被动技能',
                 Buttonpos = {x, y},
                 UnButtonpos = {x, y},
