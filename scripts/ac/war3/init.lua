@@ -1,5 +1,6 @@
 local jass = require 'jass.common'
 local dbg = require 'jass.debug'
+
 local initDamage = require 'ac.war3.damage'
 
 local FRAME = 10
@@ -27,6 +28,15 @@ local function searchPresetUnits()
     end
     jass.DestroyGroup(g)
 end
+
+ac.id = setmetatable({}, {__index = function (self, id)
+    if type(id) == 'string' then
+        self[id] = ('>I4'):unpack(id)
+    else
+        self[id] = ('>I4'):pack(id)
+    end
+    return self[id]
+end})
 
 -- 根据unit表注册地图上的预设单位
 searchPresetUnits()

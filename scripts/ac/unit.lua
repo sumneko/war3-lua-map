@@ -63,7 +63,7 @@ function ac.unit:__call(handle)
 
     All[handle] = u
 
-    if jass.GetUnitAbilityLevel(handle, Aloc) > 0 then
+    if jass.GetUnitAbilityLevel(handle, ac.id.Aloc) > 0 then
         return u
     end
 
