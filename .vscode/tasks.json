@@ -52,7 +52,7 @@
             "args": [
                 "obj",
                 "${workspaceRoot}",
-                "${workspaceRoot}/MoeHero.w3x"
+                "${workspaceRoot}/ObjMap.w3x"
             ]
         },
         {
@@ -66,7 +66,7 @@
             },
             "args": [
                 "lni",
-                "${workspaceRoot}/MoeHero.w3x",
+                "${workspaceRoot}/ObjMap.w3x",
                 "${workspaceRoot}"
             ]
         },
@@ -82,7 +82,7 @@
             "args": [
                 "slk",
                 "${workspaceRoot}",
-                "${workspaceRoot}/MoeHero.w3x"
+                "${workspaceRoot}/SlkMap.w3x"
             ]
         },
         {
