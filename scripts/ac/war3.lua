@@ -3,7 +3,7 @@ local dbg = require 'jass.debug'
 
 local FRAME = 10
 
-local function timer()
+local function startTimer()
     local jTimer = jass.CreateTimer()
     dbg.handle_ref(jTimer)
     jass.TimerStart(jTimer, 0.001 * FRAME, true, function ()
@@ -11,4 +11,23 @@ local function timer()
     end)
 end
 
-timer()
+local function searchPresetUnits()
+    local g = jass.CreateGroup()
+    for i = 0, 15 do
+        jass.GroupEnumUnitsOfPlayer(g, jass.Player(i), nil)
+        while true do
+            local u = jass.FirstOfGroup(g)
+            if u == 0 then
+                break
+            end
+            jass.GroupRemoveUnit(g, u)
+            ac.unit(u)
+        end
+    end
+    jass.DestroyGroup(g)
+end
+
+-- 根据unit表注册地图上的预设单位
+searchPresetUnits()
+-- 启动计时器，开始tick
+startTimer()
