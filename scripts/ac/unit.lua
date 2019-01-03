@@ -3,9 +3,6 @@ local japi = require 'jass.japi'
 local slk = require 'jass.slk'
 local dbg = require 'jass.debug'
 
-ac.unit = {}
-setmetatable(ac.unit, ac.unit)
-
 local All = {}
 local UnitTable
 
@@ -27,6 +24,10 @@ local function initUnitTable()
 end
 
 local mt = {}
+ac.unit = {
+    all = All,
+}
+setmetatable(ac.unit, ac.unit)
 
 function ac.unit:__call(handle)
     if handle == 0 then
@@ -60,7 +61,14 @@ function ac.unit:__call(handle)
     dbg.gchash(u, handle)
     u._gchash = handle
 
-    print('已注册：', u:get_name())
+    All[handle] = u
+
+    if jass.GetUnitAbilityLevel(handle, Aloc) > 0 then
+        return u
+    end
+
+    ac.game:event_notify('单位-初始化', u)
+    ac.game:event_notify('单位-创建', u)
 
     return u
 end

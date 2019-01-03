@@ -1,5 +1,6 @@
 local jass = require 'jass.common'
 local dbg = require 'jass.debug'
+local initDamage = require 'ac.war3.damage'
 
 local FRAME = 10
 
@@ -29,5 +30,8 @@ end
 
 -- 根据unit表注册地图上的预设单位
 searchPresetUnits()
+-- 注册任意单位受伤事件
+initDamage(function ()
+end)
 -- 启动计时器，开始tick
 startTimer()
