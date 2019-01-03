@@ -1,6 +1,6 @@
 ac.event = {}
 
-function ac.event_dispatch(obj, name, ...)
+function ac.eventDispatch(obj, name, ...)
     local events = obj._events
     if not events then
         return
@@ -17,7 +17,7 @@ function ac.event_dispatch(obj, name, ...)
     end
 end
 
-function ac.event_notify(obj, name, ...)
+function ac.eventNotify(obj, name, ...)
     local events = obj._events
     if not events then
         return
@@ -31,7 +31,7 @@ function ac.event_notify(obj, name, ...)
     end
 end
 
-function ac.event_register(obj, name, f)
+function ac.eventRegister(obj, name, f)
     local events = obj._events
     if not events then
         events = {}
@@ -48,14 +48,14 @@ function ac.event_register(obj, name, f)
     return ac.trigger(event, f)
 end
 
-function ac.game:event_dispatch(name, ...)
-    return ac.event_dispatch(self, name, ...)
+function ac.game:eventDispatch(name, ...)
+    return ac.eventDispatch(self, name, ...)
 end
 
-function ac.game:event_notify(name, ...)
-    return ac.event_notify(self, name, ...)
+function ac.game:eventNotify(name, ...)
+    return ac.eventNotify(self, name, ...)
 end
 
 function ac.game:event(name, f)
-    return ac.event_register(self, name, f)
+    return ac.eventRegister(self, name, f)
 end

@@ -41,12 +41,12 @@ function ac.math.atan(v1, v2)
 end
 
 -- 随机浮点数
-function ac.math.random_float(a, b)
+function ac.math.randomFloat(a, b)
     return math.random() * (b - a) + a
 end
 
 --计算2个角度之间的夹角
-function ac.math.included_angle(r1, r2)
+function ac.math.includedAngle(r1, r2)
     local r = (r1 - r2) % 360
     if r >= 180 then
         return 360 - r, 1

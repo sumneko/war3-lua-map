@@ -67,8 +67,8 @@ function ac.unit:__call(handle)
         return u
     end
 
-    ac.game:event_notify('单位-初始化', u)
-    ac.game:event_notify('单位-创建', u)
+    ac.game:eventNotify('单位-初始化', u)
+    ac.game:eventNotify('单位-创建', u)
 
     return u
 end
@@ -77,6 +77,6 @@ mt.__index = mt
 
 mt.type = 'unit'
 
-function mt:get_name()
+function mt:getName()
     return self._slk.Propernames or self._slk.Name
 end

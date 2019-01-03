@@ -30,7 +30,7 @@ function mt:enable()
     self._enable = true
 end
 
-function mt:is_enable()
+function mt:isEnable()
     return self._enable
 end
 
@@ -68,7 +68,7 @@ function mt:remove()
     end)
 end
 
-function ac.each_trigger()
+function ac.eachTrigger()
     return pairs(Map)
 end
 
