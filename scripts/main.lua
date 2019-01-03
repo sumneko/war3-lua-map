@@ -1,1 +1,3 @@
 require 'ac'
+
+require 'test'
