@@ -1,0 +1,3 @@
+[submodule "tools/w3x2lni"]
+	path = tools/w3x2lni
+	url = https://github.com/sumneko/w3x2lni.git
