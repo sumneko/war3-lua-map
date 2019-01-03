@@ -1,5 +1,5 @@
 ac = {}
 
-ac.release = pcall(require 'currentpath')
+ac.debug = pcall(require, 'currentpath')
 
 require 'ac.debugger'

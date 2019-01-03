@@ -18,5 +18,3 @@ function runtime.error_handle(msg)
 	print(debug.traceback())
 	print("---------------------------------------")
 end
-
-package.path = 'scripts/?.lua;scripts/?/init.lua'

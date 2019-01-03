@@ -6,6 +6,6 @@ local function tryDebugger()
 	print('Debugger startup, listen port: 4279')
 end
 
-if ac.release then
+if ac.debug then
 	pcall(tryDebugger)
 end

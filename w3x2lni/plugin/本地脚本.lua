@@ -8,7 +8,7 @@ mt.info = {
 }
 
 local currentpath = [[
-package.path = package.path .. ';%s\?.lua'
+package.path = package.path .. ';%s\scripts\?.lua;%s\scripts\?\init.lua'
 ]]
 
 local function inject_jass(w2l, buf)
@@ -54,7 +54,7 @@ function mt:on_full(w2l)
         end
 
         if not w2l:file_load('map', 'scripts\\currentpath.lua') then
-            w2l:file_save('map', 'scripts\\currentpath.lua', currentpath:format((w2l.setting.input / 'scripts'):string()):gsub('\\', '\\\\'))
+            w2l:file_save('map', 'scripts\\currentpath.lua', currentpath:format(w2l.setting.input:string(), w2l.setting.input:string()):gsub('\\', '\\\\'))
             local buf = inject_jass(w2l, w2l:file_load('map', 'war3map.j'))
             if buf then
                 w2l:file_save('map', 'war3map.j', buf)
