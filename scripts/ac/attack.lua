@@ -2,34 +2,35 @@ local mt = {}
 mt.__index = mt
 
 mt.type = 'attack'
+mt.unit = nil
 
-local function init(unit)
-    local attack = unit._slk.attack
-    if not attack then
-        return
-    end
-
-    unit.attack = setmetatable(attack, mt)
-end
-
-local function shotInstant(source, target)
-    ac.damage.launch {
-        source = source,
+function mt:shotInstant(target)
+    local damage = ac.damage.create {
+        source = self.unit,
         target = target,
-        damage = source:get '攻击',
+        skill  = self,
+        damage = self.unit:get '攻击',
     }
+    ac.damage.dispatch(damage)
 end
 
-local function shot(source, target)
-    if not source.attack then
-        return
-    end
-    if source.attack.type == '立即' then
-        shotInstant(source, target)
+function mt:dispatch(target)
+    if self.type == '立即' then
+        self:shotInstant(target)
+    elseif self.type == '弹道' then
+        self:shotInstant(target)
     end
 end
 
-ac.attack = {
-    init = init,
-    shot = shot,
-}
+return function (unit, attack)
+    if not attack then
+        return nil
+    end
+
+    return setmetatable({
+        type = attack.type,
+        range = attack.range,
+        mover = attack.mover,
+        unit = unit,
+    }, mt)
+end

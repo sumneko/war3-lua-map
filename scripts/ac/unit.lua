@@ -3,6 +3,7 @@ local japi = require 'jass.japi'
 local slk = require 'jass.slk'
 local dbg = require 'jass.debug'
 local attribute = require 'ac.attribute'
+local attack = require 'ac.attack'
 
 local All = {}
 local UnitTable
@@ -75,10 +76,7 @@ function ac.unit:__call(handle)
     ac.game:eventNotify('单位-初始化', u)
 
     -- 初始化攻击
-    if u._slk.attack then
-        ac.attack.init(u)
-    end
-
+    u.attack = attack(u, u._data.attack)
 
     ac.game:eventNotify('单位-创建', u)
 
@@ -103,4 +101,43 @@ end
 
 function mt:add(k, v)
     self.attribute:add(k, v)
+end
+
+function mt:kill(target)
+    jass.KillUnit(target._handle)
+    target:eventNotify('单位-死亡', self)
+end
+
+--注册单位事件
+function mt:event(name)
+    return ac.event_register(self, name)
+end
+
+--发起事件
+function mt:eventDispatch(name, ...)
+    local res = ac.eventDispatch(self, name, ...)
+    if res ~= nil then
+        return res
+    end
+    --local player = self:getOwner()
+    --if player then
+    --	local res = ac.eventDispatch(player, name, ...)
+    --	if res ~= nil then
+    --		return res
+    --	end
+    --end
+    local res = ac.eventDispatch(ac.game, name, ...)
+    if res ~= nil then
+        return res
+    end
+    return nil
+end
+
+function mt:eventNotify(name, ...)
+    ac.eventNotify(self, name, ...)
+    --local player = self:getOwner()
+    --if player then
+    --	ac.eventNotify(player, name, ...)
+    --end
+    ac.eventNotify(ac.game, name, ...)
 end

@@ -6,7 +6,9 @@ local Condition = jass.Condition(function ()
     local target = ac.unit(jass.GetTriggerUnit())
     local dmg = jass.GetEventDamage()
     if source and target and dmg == 1.0 then
-        ac.attack.shot(source, target)
+        if source.attack then
+            source.attack:dispatch(target)
+        end
     end
 end)
 
