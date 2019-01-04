@@ -1,7 +1,7 @@
 local jass = require 'jass.common'
 local japi = require 'jass.japi'
 
-local Care = {'生命', '生命上限', '魔法', '魔法上限', '攻击', '护甲', '移动速度', '攻击速度'}
+local Care = {'生命', '生命上限', '生命恢复', '魔法', '魔法上限', '魔法恢复', '攻击', '护甲', '移动速度', '攻击速度'}
 
 local Show = {
     ['生命'] = function (unit, v)
@@ -56,23 +56,31 @@ local Set = {
             attribute:set('魔法', rate * attribute:get '魔法上限')
         end
     end,
+    ['生命'] = function (attribute)
+        return function ()
+            local life = attribute:get '生命'
+            local max = attribute:get '生命上限'
+            if life > max then
+                attribute:set('生命', max)
+            elseif life < 0 then
+                attribute:set('生命', 0)
+            end
+        end
+    end,
+    ['魔法'] = function (attribute)
+        return function ()
+            local mana = attribute:get '魔法'
+            local max = attribute:get '魔法上限'
+            if mana > max then
+                attribute:set('魔法', max)
+            elseif mana < 0 then
+                attribute:set('魔法', 0)
+            end
+        end
+    end,
 }
 
 local Get = {
-    ['生命'] = function (attribute, v)
-        if v < 0 then
-            return 0
-        elseif v > attribute:get '生命上限' then
-            return attribute:get '生命上限'
-        end
-    end,
-    ['魔法'] = function (attribute, v)
-        if v < 0 then
-            return 0
-        elseif v > attribute:get '魔法上限' then
-            return attribute:get '魔法上限'
-        end
-    end,
 }
 
 local mt = {}
@@ -87,10 +95,10 @@ function mt:set(k, v)
     local wait = self:onSet(k)
     self._base[k] = v
     self._rate[k] = 0.0
-    self:onShow(k)
     if wait then
         wait()
     end
+    self:onShow(k)
 end
 
 function mt:get(k)
@@ -109,17 +117,17 @@ function mt:add(k, v)
         k = k:sub(1, -2)
         local wait = self:onSet(k)
         self._rate[k] = self._rate[k] + v
-        self:onShow(k)
         if wait then
             wait()
         end
+        self:onShow(k)
     else
         local wait = self:onSet(k)
         self._base[k] = self._base[k] + v
-        self:onShow(k)
         if wait then
             wait()
         end
+        self:onShow(k)
     end
 end
 

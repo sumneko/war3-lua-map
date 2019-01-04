@@ -4,6 +4,7 @@ local slk = require 'jass.slk'
 local dbg = require 'jass.debug'
 local attribute = require 'ac.attribute'
 local attack = require 'ac.attack'
+local mover = require 'ac.mover'
 
 local All = {}
 local UnitTable
@@ -25,14 +26,21 @@ local function initUnitTable()
     end
 end
 
-local mt = {}
-ac.unit = {
-    all = All,
-    mt  = mt,
-}
-setmetatable(ac.unit, ac.unit)
+local function update(delta)
+    for _, u in pairs(All) do
+        local life = delta / 1000 * u:get '生命恢复'
+        if life > 0 then
+            u:add('生命', life)
+        end
+        local mana = delta / 1000 * u:get '魔法恢复'
+        if mana > 0 then
+            u:add('魔法', mana)
+        end
+    end
+end
 
-function ac.unit:__call(handle)
+local mt = {}
+function ac.unit(handle)
     if handle == 0 then
         return nil
     end
@@ -141,3 +149,8 @@ function mt:eventNotify(name, ...)
     --end
     ac.eventNotify(ac.game, name, ...)
 end
+
+return {
+    all = All,
+    update = update,
+}

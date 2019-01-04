@@ -1,4 +1,5 @@
 local jass = require 'jass.common'
+local unit = require 'ac.unit'
 
 local Trg
 local Condition = jass.Condition(function ()
@@ -18,7 +19,7 @@ local function createTrigger()
     end
     Trg = jass.CreateTrigger()
     jass.TriggerAddCondition(Trg, Condition)
-    for handle in pairs(ac.unit.all) do
+    for handle in pairs(unit.all) do
         if jass.GetUnitAbilityLevel(handle, ac.id.Aloc) == 0 then
             jass.TriggerRegisterUnitEvent(Trg, handle, 52) -- EVENT_UNIT_DAMAGED
         end
@@ -30,7 +31,7 @@ return function ()
     ac.loop(600 * 1000, function ()
         createTrigger()
     end)
-    ac.game:event('单位-初始化', function (_, unit)
-        jass.TriggerRegisterUnitEvent(Trg, unit.handle, 52) -- EVENT_UNIT_DAMAGED
+    ac.game:event('单位-初始化', function (_, u)
+        jass.TriggerRegisterUnitEvent(Trg, u.handle, 52) -- EVENT_UNIT_DAMAGED
     end)
 end

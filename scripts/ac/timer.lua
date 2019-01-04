@@ -113,7 +113,7 @@ function ac.timer_all()
     return tbl
 end
 
-ac.event['游戏-帧'] = function (delta)
+local function update(delta)
     if curIndex ~= 0 then
         curFrame = curFrame - 1
     end
@@ -256,3 +256,5 @@ function ac.utimer(u, timeout, count, on_timer)
     tableInsert(u._timers, t)
     return t
 end
+
+return update

@@ -9,7 +9,7 @@ local function startTimer()
     local jTimer = jass.CreateTimer()
     dbg.handle_ref(jTimer)
     jass.TimerStart(jTimer, 0.001 * FRAME, true, function ()
-        ac.event['游戏-帧'](FRAME)
+        ac.world.update(FRAME)
     end)
 end
 
