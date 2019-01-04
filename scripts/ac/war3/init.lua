@@ -41,7 +41,6 @@ end})
 -- 根据unit表注册地图上的预设单位
 searchPresetUnits()
 -- 注册任意单位受伤事件
-initDamage(function ()
-end)
+initDamage()
 -- 启动计时器，开始tick
 startTimer()

@@ -1,13 +1,21 @@
 local jass = require 'jass.common'
 
 local Trg
+local Condition = jass.Condition(function ()
+    local source = ac.unit(jass.GetEventDamageSource())
+    local target = ac.unit(jass.GetTriggerUnit())
+    local dmg = jass.GetEventDamage()
+    if source and target and dmg == 1.0 then
+        ac.attack.shot(source, target)
+    end
+end)
 
-local function createTrigger(callback)
+local function createTrigger()
     if Trg then
         jass.DestroyTrigger(Trg)
     end
     Trg = jass.CreateTrigger()
-    jass.TriggerAddCondition(Trg, jass.Condition(callback))
+    jass.TriggerAddCondition(Trg, Condition)
     for handle in pairs(ac.unit.all) do
         if jass.GetUnitAbilityLevel(handle, ac.id.Aloc) == 0 then
             jass.TriggerRegisterUnitEvent(Trg, handle, 52) -- EVENT_UNIT_DAMAGED
@@ -15,10 +23,10 @@ local function createTrigger(callback)
     end
 end
 
-return function (callback)
-    createTrigger(callback)
+return function ()
+    createTrigger()
     ac.loop(600 * 1000, function ()
-        createTrigger(callback)
+        createTrigger()
     end)
     ac.game:event('单位-初始化', function (_, unit)
         jass.TriggerRegisterUnitEvent(Trg, unit.handle, 52) -- EVENT_UNIT_DAMAGED

@@ -1,0 +1,160 @@
+local jass = require 'jass.common'
+local japi = require 'jass.japi'
+
+local Care = {'生命', '生命上限', '魔法', '魔法上限', '攻击', '护甲', '移动速度', '攻击速度'}
+
+local Show = {
+    ['生命'] = function (unit, v)
+        if v > 1 then
+            jass.SetWidgetLife(unit._handle, v)
+        else
+            jass.SetWidgetLife(unit._handle, 1)
+        end
+    end,
+    ['生命上限'] = function (unit, v)
+        if v > 1 then
+            japi.SetUnitState(unit._handle, 1, v)
+        else
+            japi.SetUnitState(unit._handle, 1, 1)
+        end
+    end,
+    ['魔法'] = function (unit, v)
+        jass.SetUnitState(unit._handle, 2, v)
+    end,
+    ['魔法上限'] = function (unit, v)
+        japi.SetUnitState(unit._handle, 3, v)
+    end,
+    ['攻击'] = function (unit, v)
+        japi.SetUnitState(unit._handle, 0x12, v-1)
+    end,
+    ['护甲'] = function (unit, v)
+        japi.SetUnitState(unit._handle, 0x20, v)
+    end,
+    ['移动速度'] = function (unit, v)
+        jass.SetUnitMoveSpeed(unit._handle, v)
+    end,
+    ['攻击速度'] = function (unit, v)
+        if v >= 0 then
+            japi.SetUnitState(unit._handle, 0x51, 1 + v / 100)
+        else
+            --当攻击速度小于0的时候,每点相当于攻击间隔增加1%
+            japi.SetUnitState(unit._handle, 0x51, 1 + v / (100 - v))
+        end
+    end,
+}
+
+local Set = {
+    ['生命上限'] = function (attribute)
+        local rate = attribute:get '生命' / attribute:get '生命上限'
+        return function ()
+            attribute:set('生命', rate * attribute:get '生命上限')
+        end
+    end,
+    ['魔法上限'] = function (attribute)
+        local rate = attribute:get '魔法' / attribute:get '魔法上限'
+        return function ()
+            attribute:set('魔法', rate * attribute:get '魔法上限')
+        end
+    end,
+}
+
+local Get = {
+    ['生命'] = function (attribute, v)
+        if v < 0 then
+            return 0
+        elseif v > attribute:get '生命上限' then
+            return attribute:get '生命上限'
+        end
+    end,
+    ['魔法'] = function (attribute, v)
+        if v < 0 then
+            return 0
+        elseif v > attribute:get '魔法上限' then
+            return attribute:get '魔法上限'
+        end
+    end,
+}
+
+local mt = {}
+mt.__index = mt
+
+-- 设置固定值，会清除百分比部分
+function mt:set(k, v)
+    local ext = k:sub(-1)
+    if ext == '%' then
+        error('设置属性不能带属性')
+    end
+    local wait = self:onSet(k)
+    self._base[k] = v
+    self._rate[k] = 0.0
+    self:onShow(k)
+    if wait then
+        wait()
+    end
+end
+
+function mt:get(k)
+    local base = self._base[k] or 0.0
+    local rate = self._rate[k] or 0.0
+    local v = base * (1.0 + rate / 100.0)
+    if Get[k] then
+        v = Get[k](self, v) or v
+    end
+    return v
+end
+
+function mt:add(k, v)
+    local ext = k:sub(-1)
+    if ext == '%' then
+        k = k:sub(1, -2)
+        local wait = self:onSet(k)
+        self._rate[k] = self._rate[k] + v
+        self:onShow(k)
+        if wait then
+            wait()
+        end
+    else
+        local wait = self:onSet(k)
+        self._base[k] = self._base[k] + v
+        self:onShow(k)
+        if wait then
+            wait()
+        end
+    end
+end
+
+function mt:onShow(k)
+    if not Show[k] then
+        return
+    end
+    local v = self:get(k)
+    local s = self._show[k]
+    if v == s then
+        return
+    end
+    self._show[k] = v
+    Show[k](self._unit, v)
+end
+
+function mt:onSet(k)
+    if not Set[k] then
+        return nil
+    end
+    return Set[k](self)
+end
+
+return function (unit, default)
+    local obj = setmetatable({
+        _unit = unit,
+        _base = {},
+        _rate = {},
+        _show = {},
+    }, mt)
+    for _, k in ipairs(Care) do
+        local v = default and default[k] or 0.0
+        obj:set(k, v)
+    end
+    obj:set('生命', obj:get '生命上限')
+    obj:set('魔法', obj:get '魔法上限')
+    return obj
+end

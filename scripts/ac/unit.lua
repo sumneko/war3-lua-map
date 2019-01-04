@@ -2,6 +2,7 @@ local jass = require 'jass.common'
 local japi = require 'jass.japi'
 local slk = require 'jass.slk'
 local dbg = require 'jass.debug'
+local attribute = require 'ac.attribute'
 
 local All = {}
 local UnitTable
@@ -26,6 +27,7 @@ end
 local mt = {}
 ac.unit = {
     all = All,
+    mt  = mt,
 }
 setmetatable(ac.unit, ac.unit)
 
@@ -56,7 +58,7 @@ function ac.unit:__call(handle)
         _handle = handle,
         _id = id,
         _data = data,
-        _slk = slk.unit[id]
+        _slk = slk.unit[id],
     }, mt)
     dbg.gchash(u, handle)
     u._gchash = handle
@@ -67,7 +69,17 @@ function ac.unit:__call(handle)
         return u
     end
 
+    -- 初始化单位属性
+    u.attribute = attribute(u, u._data.attribute)
+
     ac.game:eventNotify('单位-初始化', u)
+
+    -- 初始化攻击
+    if u._slk.attack then
+        ac.attack.init(u)
+    end
+
+
     ac.game:eventNotify('单位-创建', u)
 
     return u
@@ -79,4 +91,16 @@ mt.type = 'unit'
 
 function mt:getName()
     return self._slk.Propernames or self._slk.Name
+end
+
+function mt:set(k, v)
+    self.attribute:set(k, v)
+end
+
+function mt:get(k)
+    return self.attribute:get(k)
+end
+
+function mt:add(k, v)
+    self.attribute:add(k, v)
 end
