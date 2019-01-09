@@ -59,14 +59,37 @@ local function createMover(mover)
     if ac.isUnit(mover.mover) then
         return true
     end
+    if type(mover.mover) == 'string' then
+        local dummy = ac.unit.create(mover.source:getOwner(), mover.mover, mover.start, mover.angle)
+        if dummy then
+            mover.mover = dummy
+            mover._needKillMover = true
+            return true
+        end
+    end
+    if mover.particle then
+        local dummy = ac.unit.create(mover.source:getOwner(), '@运动马甲', mover.start, mover.angle)
+        if dummy then
+            mover.mover = dummy
+            mover._needKillMover = true
+            dummy:particle(mover.particle, 'origin')
+            return true
+        end
+    end
+    return false, '没有运动单位'
+end
+
+local function computeParams(mover)
+    if not ac.isUnit(mover.source) then
+        return nil, '来源必须是单位'
+    end
+    if not ac.isPoint(mover.start) then
+        mover.start = mover.source:getPoint()
+    end
+    return true
 end
 
 local function create(data)
-    local source = data.source
-    if not ac.isUnit(source) then
-        return nil, '来源必须是单位'
-    end
-
     local mover = setmetatable(data, mt)
 
     if mover.moverType == 'target' then
@@ -75,12 +98,17 @@ local function create(data)
         return nil, '未知的运动类型'
     end
 
-    local ok, err = createMover(mover)
+    local ok, err = computeParams(mover)
     if not ok then
         return nil, err
     end
 
     local ok, err = mover.project.onCreate(mover)
+    if not ok then
+        return nil, err
+    end
+
+    local ok, err = createMover(mover)
     if not ok then
         return nil, err
     end
@@ -96,6 +124,9 @@ function mt:remove()
     end
     self._removed = true
     removeList(self)
+    if self._needKillMover then
+        self.mover:kill()
+    end
 end
 
 function mt:finish()
