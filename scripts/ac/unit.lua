@@ -219,6 +219,10 @@ function mt:setFacing(angle, time)
     end
 end
 
+function mt:getFacing()
+    return jass.GetUnitFacing(self._handle)
+end
+
 function mt:createUnit(name, point, face)
     return create(self:getOwner(), name, point, face)
 end

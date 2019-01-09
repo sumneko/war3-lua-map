@@ -116,8 +116,8 @@ local function computeParams(mover)
     if not ac.isPoint(mover.start) then
         mover.start = mover.source:getPoint()
     end
-    if mover.point then
-        mover.startHeight = mover.point[3]
+    if mover.fix then
+        mover.start = mover.start - {mover.fix[1] + mover.source:getFacing(), mover.fix[2]}
     end
     if not mover.heightEquation then
         local start  = ac.toNumber(mover.startHeight)

@@ -28,7 +28,11 @@ local function onMove(mover, delta)
     end
 end
 
+local function getAngle(mover)
+end
+
 return {
     onCreate = onCreate,
     onMove = onMove,
+    getAngle = getAngle,
 }
