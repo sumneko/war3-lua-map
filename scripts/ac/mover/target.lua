@@ -20,9 +20,11 @@ local function onMove(mover, delta)
     mover:setAngle(angle)
     if step >= distance then
         mover.mover:setPoint(dest)
+        mover:setProcess(1.0)
         mover:finish()
     else
         mover.mover:setPoint(me - {angle, step})
+        mover:stepProcess(step / distance)
     end
 end
 

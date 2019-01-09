@@ -223,6 +223,19 @@ function mt:createUnit(name, point, face)
     return create(self:getOwner(), name, point, face)
 end
 
+function mt:addHeight(n)
+    if n == 0.0 then
+        return
+    end
+    if not self._height then
+        self._height = 0.0
+        jass.UnitAddAbility(self._handle, ac.id.Arav)
+        jass.UnitRemoveAbility(self._handle, ac.id.Arav)
+    end
+    self._height = self._height + n
+    jass.SetUnitFlyHeight(self._handle, self._height, 0.0)
+end
+
 --注册单位事件
 function mt:event(name)
     return ac.event_register(self, name)

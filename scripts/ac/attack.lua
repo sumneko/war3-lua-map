@@ -30,6 +30,7 @@ function mt:shotMissile(target)
         data[k] = v
     end
     data.target = target
+    data.finishHeight = target._data.hitHeight
 
     local mover, err = self._owner:moverTarget(data)
     if not mover then
