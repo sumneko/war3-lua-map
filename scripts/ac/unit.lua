@@ -121,6 +121,7 @@ function ac.unit(handle)
         log.error(('[%s]的class无效'):format(name))
         return nil
     end
+    local slkUnit = slk.unit[id]
 
     local u = setmetatable({
         class = class,
@@ -128,8 +129,9 @@ function ac.unit(handle)
         _handle = handle,
         _id = id,
         _data = data,
-        _slk = slk.unit[id],
+        _slk = slkUnit,
         _owner = ac.player(1+jass.GetPlayerId(jass.GetOwningPlayer(handle))),
+        _collision = ac.toNumber(slkUnit.collision),
     }, mt)
     dbg.gchash(u, handle)
     u._gchash = handle
@@ -180,11 +182,21 @@ function mt:kill(target)
     if not ac.isUnit(target) then
         return
     end
-    jass.KillUnit(target._handle)
+    -- TODO 英雄不能解除关联
+    local handle = target._handle
+    if true then
+        target._handle = 0
+        target._lastPoint = target:getPoint()
+        All[handle] = nil
+    end
+    jass.KillUnit(handle)
     target:eventNotify('单位-死亡', self)
 end
 
 function mt:getPoint()
+    if self._lastPoint then
+        return self._lastPoint
+    end
     -- 以后进行优化：在每帧脚本控制时间内，第一次获取点后将点缓存下来
     return ac.point(jass.GetUnitX(self._handle), jass.GetUnitY(self._handle))
 end
@@ -238,6 +250,14 @@ function mt:addHeight(n)
     end
     self._height = self._height + n
     jass.SetUnitFlyHeight(self._handle, self._height, 0.0)
+end
+
+function mt:getHeight()
+    return self._height or 0.0
+end
+
+function mt:getCollision()
+    return self._collision
 end
 
 --注册单位事件

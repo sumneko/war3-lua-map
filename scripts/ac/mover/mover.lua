@@ -1,6 +1,8 @@
 local moverTarget = require 'ac.mover.target'
 local parabola = require 'ac.mover.parabola'
 
+local Movers = ac.list()
+
 local mt = {}
 mt.__index = mt
 
@@ -10,7 +12,6 @@ mt.speed = 1000.0
 mt._process = 0.0
 mt._height = 0.0
 
-local Movers = {}
 
 local function callMethod(mover, name, ...)
     local method = mover[name]
@@ -45,43 +46,21 @@ local function updateFinish(mover)
 end
 
 local function update(delta)
-    local max = #Movers
-
-    -- TODO 翻倍后压缩数组
-
     -- 1. 更新移动
-    for i = 1, max do
-        local mover = Movers[i]
-        if mover then
-            updateMove(mover, delta)
-            updateHeight(mover)
-        end
+    for mover in Movers:pairs() do
+        updateMove(mover, delta)
+        updateHeight(mover)
     end
 
     -- 2. 检查碰撞
 
     -- 3. 检查完成
-    for i = 1, max do
-        local mover = Movers[i]
-        if mover then
-            updateFinish(mover)
-        end
+    for mover in Movers:pairs() do
+        updateFinish(mover)
     end
-end
 
-local function addList(mover)
-    local n = #Movers+1
-    Movers[n] = mover
-    Movers[mover] = n
-end
-
-local function removeList(mover)
-    local n = Movers[mover]
-    if not n then
-        return
-    end
-    Movers[n] = false
-    Movers[mover] = nil
+    -- 4. 清理
+    Movers:clean()
 end
 
 local function createMover(mover)
@@ -152,7 +131,7 @@ local function create(data)
         return nil, err
     end
 
-    addList(mover)
+    Movers:insert(mover)
     updateHeight(mover)
 
     return mover
@@ -163,7 +142,7 @@ function mt:remove()
         return
     end
     self._removed = true
-    removeList(self)
+    Movers:remove(self)
     if self._needKillMover then
         self.mover:kill()
     end
