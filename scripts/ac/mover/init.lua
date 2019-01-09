@@ -14,14 +14,14 @@ local function callMethod(mover, name, ...)
     if not method then
         return
     end
-    local suc, res = xpcall(method, log.error, ...)
+    local suc, res = xpcall(method, log.error, mover, ...)
     if suc then
         return res
     end
 end
 
 local function updateMove(mover, delta)
-    mover.project.onMove(delta)
+    mover.project.onMove(mover, delta)
 end
 
 local function updateFinish(mover)
@@ -33,6 +33,9 @@ end
 
 local function update(delta)
     local max = #Movers
+
+    -- TODO 翻倍后压缩数组
+
     -- 1. 更新移动
     for i = 1, max do
         local mover = Movers[i]
@@ -84,10 +87,11 @@ local function createMover(mover)
         if dummy then
             mover.mover = dummy
             mover._needKillMover = true
-            dummy:particle(mover.model, 'origin')
+            mover._needDestroyParicle = dummy:particle(mover.model, 'origin')
             return true
         end
     end
+    mover.mover = nil
     return false, '没有运动单位'
 end
 
@@ -138,6 +142,9 @@ function mt:remove()
     removeList(self)
     if self._needKillMover then
         self.mover:kill()
+    end
+    if self._needDestroyParicle then
+        self._needDestroyParicle()
     end
 end
 

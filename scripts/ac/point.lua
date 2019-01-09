@@ -51,7 +51,7 @@ end
 function mt:__div(dest)
     local x1, y1 = self:getXY()
     local x2, y2 = dest:getXY()
-    return math.atan(y2 - y1, x2 - x1)
+    return ac.math.atan(y2 - y1, x2 - x1)
 end
 
 function ac.point(x, y)

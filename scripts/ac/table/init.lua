@@ -15,7 +15,6 @@ function mt:searcher(name, callback)
     end
     for _, path in ipairs(split(searcher, ';')) do
         local fullpath = path: gsub('%$(.-)%$', function(v) return marco[v] or '' end)
-        print('搜索：', fullpath)
         callback(fullpath)
     end
 end

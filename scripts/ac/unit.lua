@@ -47,6 +47,10 @@ local function createDestructor(unit, callback)
         unit._destructor = { sort = 0 }
     end
     local function destructor()
+        -- 保证每个析构器只调用一次
+        if not unit._destructor[destructor] then
+            return
+        end
         unit._destructor[destructor] = nil
         callback()
     end
@@ -80,7 +84,8 @@ local function create(player, name, point, face)
         return nil
     end
     local x, y = point:getXY()
-    local handle = jass.CreateUnit(player._handle, data.id, x, y, face)
+    local unitid = ac.id[data.id]
+    local handle = jass.CreateUnit(player._handle, unitid, x, y, face)
     if handle == 0 then
         log.error(('单位[%s]创建失败'):format(name))
         return nil
@@ -200,9 +205,8 @@ function mt:particle(model, socket)
         return nil
     else
         return createDestructor(self, function ()
+            -- 这里不做引用计数保护，但析构器会保证这段代码只会运行一次
             jass.DestroyEffect(handle)
-            -- 这里不做引用计数保护，因此删除一次后将局部变量释放掉，保证不会再次访问
-            handle = nil
         end)
     end
 end
