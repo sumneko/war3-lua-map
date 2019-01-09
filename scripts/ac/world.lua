@@ -14,6 +14,11 @@ local function update(delta)
     updateTimer(delta)
 end
 
+local function getTick()
+    return Tick
+end
+
 ac.world = {
     update = update,
+    tick = getTick,
 }

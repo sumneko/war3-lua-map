@@ -116,6 +116,16 @@ function mt:kill(target)
     target:eventNotify('单位-死亡', self)
 end
 
+function mt:getPoint()
+    return ac.point(jass.GetUnitX(self._handle), jass.GetUnitY(self._handle))
+end
+
+function mt:setPoint(point)
+    local x, y = point:getXY()
+    jass.SetUnitX(self._handle, x)
+    jass.SetUnitY(self._handle, y)
+end
+
 --注册单位事件
 function mt:event(name)
     return ac.event_register(self, name)
@@ -150,7 +160,20 @@ function mt:eventNotify(name, ...)
     ac.eventNotify(ac.game, name, ...)
 end
 
+function mt:moverTarget(data)
+    data.source = self
+    data.moverType = 'target'
+    return mover.create(data)
+end
+
+function mt:moverLine(data)
+    data.source = self
+    data.moverType = 'line'
+    return mover.create(data)
+end
+
 return {
     all = All,
     update = update,
+    create = create,
 }
