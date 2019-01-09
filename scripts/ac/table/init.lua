@@ -15,6 +15,7 @@ function mt:searcher(name, callback)
     end
     for _, path in ipairs(split(searcher, ';')) do
         local fullpath = path: gsub('%$(.-)%$', function(v) return marco[v] or '' end)
+        print('搜索：', fullpath)
         callback(fullpath)
     end
 end
@@ -58,7 +59,7 @@ function mt:get_searcher(name)
     return result
 end
 
-mt:set_marco('TableSearcher', '$MapPath$table\\;$MapPath$scripts\\ac\\table')
+mt:set_marco('TableSearcher', '$MapPath$table\\;$MapPath$ac\\table\\')
 for _, path in ipairs(split(package.path, ';')) do
     local buf = storm.load(path:gsub('%?%.lua', 'table\\.iniconfig'))
     if buf then

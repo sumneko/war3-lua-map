@@ -81,6 +81,10 @@ local function create(player, name, point, face)
     end
     local x, y = point:getXY()
     local handle = jass.CreateUnit(player._handle, data.id, x, y, face)
+    if handle == 0 then
+        log.error(('单位[%s]创建失败'):format(name))
+        return nil
+    end
     local unit = ac.unit(handle)
     return unit
 end
@@ -176,6 +180,7 @@ function mt:kill(target)
 end
 
 function mt:getPoint()
+    -- 以后进行优化：在每帧脚本控制时间内，第一次获取点后将点缓存下来
     return ac.point(jass.GetUnitX(self._handle), jass.GetUnitY(self._handle))
 end
 
@@ -200,6 +205,18 @@ function mt:particle(model, socket)
             handle = nil
         end)
     end
+end
+
+function mt:setFacing(angle, time)
+    if time then
+        jass.SetUnitFacingTimed(self._handle, angle, time / 1000.0)
+    else
+        japi.EXSetUnitFacing(self._handle, angle)
+    end
+end
+
+function mt:createUnit(name, point, face)
+    return create(self:getOwner(), name, point, face)
 end
 
 --注册单位事件
@@ -251,5 +268,4 @@ end
 return {
     all = All,
     update = update,
-    create = create,
 }

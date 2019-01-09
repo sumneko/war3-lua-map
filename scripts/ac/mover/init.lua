@@ -9,12 +9,24 @@ mt.speed = 1000.0
 
 local Movers = {}
 
+local function callMethod(mover, name, ...)
+    local method = mover[name]
+    if not method then
+        return
+    end
+    local suc, res = xpcall(method, log.error, ...)
+    if suc then
+        return res
+    end
+end
+
 local function updateMove(mover, delta)
     mover.project.onMove(delta)
 end
 
 local function updateFinish(mover)
     if mover._finish then
+        callMethod(mover, 'onFinish')
         mover:remove()
     end
 end
@@ -60,19 +72,19 @@ local function createMover(mover)
         return true
     end
     if type(mover.mover) == 'string' then
-        local dummy = ac.unit.create(mover.source:getOwner(), mover.mover, mover.start, mover.angle)
+        local dummy = mover.source:createUnit(mover.mover, mover.start, mover.angle)
         if dummy then
             mover.mover = dummy
             mover._needKillMover = true
             return true
         end
     end
-    if mover.particle then
-        local dummy = ac.unit.create(mover.source:getOwner(), '@运动马甲', mover.start, mover.angle)
+    if mover.model then
+        local dummy = mover.source:createUnit('@运动马甲', mover.start, mover.angle)
         if dummy then
             mover.mover = dummy
             mover._needKillMover = true
-            dummy:particle(mover.particle, 'origin')
+            dummy:particle(mover.model, 'origin')
             return true
         end
     end
@@ -131,6 +143,11 @@ end
 
 function mt:finish()
     self._finish = true
+end
+
+function mt:setAngle(angle)
+    self._angle = angle
+    self.mover:setFacing(angle)
 end
 
 return {

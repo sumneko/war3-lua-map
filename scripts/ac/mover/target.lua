@@ -13,6 +13,17 @@ local function onCreate(mover)
 end
 
 local function onMove(mover, delta)
+    local me, dest = mover.mover:getPoint(), mover.target:getPoint()
+    local angle = me / dest
+    local distance = me * dest
+    local step = mover.speed * delta / 1000
+    mover:setAngle(angle)
+    if step >= distance then
+        mover.mover:setPoint(dest)
+        mover:finish()
+    else
+        mover.mover:setPoint(me - {angle, step})
+    end
 end
 
 return {
