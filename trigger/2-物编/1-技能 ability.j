@@ -1,4 +1,4 @@
-//TESH.scrollpos=13
+//TESH.scrollpos=0
 //TESH.alwaysfold=0
 <?
 local slk = require 'slk'
@@ -17,10 +17,10 @@ local function idFactory(head)
     return ids
 end
 
--- 主动技能的模板通魔，head == 'A0'
-local skillIds = idFactory('A0')
--- 被动技能的模板月刃，head == 'A1'
-local passiveIds = idFactory('A1')
+-- 主动技能的模板通魔，head == 'SS'
+local skillIds = idFactory('SS')
+-- 被动技能的模板月刃，head == 'SP'
+local passiveIds = idFactory('SP')
 -- 为每个格子分配50个技能，共600个
 local i = 0
 for x = 0, 3 do
