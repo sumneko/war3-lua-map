@@ -34,21 +34,23 @@ local mt = {}
 mt.__index = mt
 function mt:insert(obj)
     if not obj then
-        return
+        return false
     end
     local list = self.list
     local n = #list+1
     list[n] = obj
     list[obj] = n
+    return true
 end
 function mt:remove(obj)
     local list = self.list
     local n = list[obj]
     if not n then
-        return
+        return false
     end
     list[n] = false
     list[obj] = nil
+    return true
 end
 function mt:pairs()
     local i = 0

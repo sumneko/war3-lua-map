@@ -204,13 +204,13 @@ local function upgradeSkill(skill)
     end
 end
 
-local function addSkill(mgr, name, type, slot)
+local function addSkill(mgr, name, tp, slot)
     local unit = mgr._owner
     if not unit then
         return nil
     end
 
-    if type ~= '技能' and type ~= '物品' and type ~= '隐藏' then
+    if tp ~= '技能' and tp ~= '物品' and tp ~= '隐藏' then
         log.error('技能类型错误')
         return nil
     end
@@ -220,11 +220,13 @@ local function addSkill(mgr, name, type, slot)
         return nil
     end
 
-    local list = mgr[type]
+    local list = mgr[tp]
     list:insert(skill)
 
     skill._owner = unit
     skill._level = 0
+    skill._type = tp
+    skill._slot = slot
     for _ = 1, ac.toInteger(skill.initLevel, 1) do
         upgradeSkill(skill)
     end
@@ -232,11 +234,51 @@ local function addSkill(mgr, name, type, slot)
     return skill
 end
 
+local function removeSkill(unit, skill)
+    if skill._removed then
+        return
+    end
+    skill._removed = true
+
+    local mgr = unit._skill
+    if not mgr then
+        return false
+    end
+
+    local tp = skill._type
+    local list = mgr[tp]
+    if not list then
+        return false
+    end
+
+    if not list:remove(skill) then
+        return false
+    end
+
+    eventNotify(skill, 'onRemove')
+
+    return true
+end
+
 mt.__index = mt
 mt.type = 'skill'
 
 function mt:getOwner()
     return self._owner
+end
+
+function mt:remove()
+    return removeSkill(self._owner, self._parent or self)
+end
+
+function mt:set(k, v)
+    local skill = self._parent or self
+    skill[k] = v
+end
+
+function mt:get(k)
+    local skill = self._parent or self
+    return skill[k]
 end
 
 ac.skill = setmetatable({}, {
