@@ -13,7 +13,7 @@ mt._process = 0.0
 mt._height = 0.0
 
 
-local function callMethod(mover, name, ...)
+local function eventNotify(mover, name, ...)
     local method = mover[name]
     if not method then
         return
@@ -40,7 +40,7 @@ end
 
 local function updateFinish(mover)
     if mover._finish then
-        callMethod(mover, 'onFinish')
+        eventNotify(mover, 'onFinish')
         mover:remove()
     end
 end

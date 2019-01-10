@@ -20,6 +20,27 @@ end
 
 mt.__index = mt
 
+function mt:event(name)
+    return ac.event_register(self, name)
+end
+
+function mt:eventDispatch(name, ...)
+    local res = ac.eventDispatch(self, name, ...)
+    if res ~= nil then
+        return res
+    end
+    local res = ac.game:eventDispatch(ac.game, name, ...)
+    if res ~= nil then
+        return res
+    end
+    return nil
+end
+
+function mt:eventNotify(name, ...)
+    ac.eventNotify(self, name, ...)
+    ac.game:eventNotify(name, ...)
+end
+
 function ac.player(id)
     if not All[id] then
         return create(id)

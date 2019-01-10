@@ -5,6 +5,7 @@ local dbg = require 'jass.debug'
 local attribute = require 'ac.attribute'
 local attack = require 'ac.attack'
 local mover = require 'ac.mover'
+local skill = require 'ac.skill'
 
 local All = {}
 local IdMap
@@ -157,7 +158,9 @@ function ac.unit(handle)
         ac.game:eventNotify('单位-初始化', u)
 
         -- 初始化攻击
-        u.attack = attack(u, u._data.attack)
+        u._attack = attack(u, u._data.attack)
+        -- 初始化技能
+        u._skill = skill(u)
 
         ac.game:eventNotify('单位-创建', u)
     elseif class == '弹道' then
@@ -298,25 +301,26 @@ function mt:getCollision()
     return self._collision
 end
 
---注册单位事件
+function mt:addSkill(name, type, slot)
+    if self._removed then
+        return nil
+    end
+    if not self._skill then
+        return nil
+    end
+    return self._skill:addSkill(name, type, slot)
+end
+
 function mt:event(name)
     return ac.event_register(self, name)
 end
 
---发起事件
 function mt:eventDispatch(name, ...)
     local res = ac.eventDispatch(self, name, ...)
     if res ~= nil then
         return res
     end
-    local player = self:getOwner()
-    if player then
-        local res = ac.eventDispatch(player, name, ...)
-        if res ~= nil then
-            return res
-        end
-    end
-    local res = ac.eventDispatch(ac.game, name, ...)
+    local res = self:getOwner():eventDispatch(name, ...)
     if res ~= nil then
         return res
     end
@@ -325,11 +329,7 @@ end
 
 function mt:eventNotify(name, ...)
     ac.eventNotify(self, name, ...)
-    local player = self:getOwner()
-    if player then
-        ac.eventNotify(player, name, ...)
-    end
-    ac.eventNotify(ac.game, name, ...)
+    self:getOwner():eventNotify(name, ...)
 end
 
 function mt:moverTarget(data)

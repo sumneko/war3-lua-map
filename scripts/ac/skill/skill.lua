@@ -6,6 +6,12 @@ local rawget = rawget
 local getmetatable = getmetatable
 local setmetatable = setmetatable
 
+local METHOD = {
+    ['onAdd']     = '技能-获得',
+    ['onRemove']  = '技能-失去',
+    ['onUpgrade'] = '技能-升级',
+}
+
 -- 技能分为4层：
 -- 1. data，通过ac.table.skill[name]访问，与lni中填写的内容一样
 -- 2. define，通过ac.skill[name]访问，已根据技能的maxLevel字段
@@ -17,6 +23,26 @@ local setmetatable = setmetatable
 local DefinedData = {}
 local DefinedDual = {}
 local mt = {}
+
+local function callMethod(skill, name, ...)
+    local method = skill[name]
+    if not method then
+        return
+    end
+    local suc, res = xpcall(method, log.error, skill, ...)
+    if suc then
+        return res
+    end
+end
+
+local function eventNotify(skill, name, ...)
+    local event = METHOD[name]
+    if event then
+        ac.eventNotify(skill, event, ...)
+        skill:getOwner():eventNotify(event, ...)
+    end
+    callMethod(skill, name, ...)
+end
 
 local function compileValue(name, k, v, maxLevel)
     if type(v) == 'table' and type(v[1]) == 'number' then
@@ -56,8 +82,8 @@ local function compileDual(name, definedData, maxLevel)
     local dual = {}
     for lv = 1, maxLevel do
         dual[lv] = {}
-        dual[lv].__index = dual[lv]
         dual[lv]._name = name
+        dual[lv].__index = dual[lv]
         setmetatable(dual[lv], mt)
     end
     for k, v in pairs(definedData) do
@@ -76,7 +102,6 @@ local function compileData(name, data)
     end
 
     local definedData = {}
-    definedData.__index = definedData
     for k, v in pairs(data) do
         definedData[k] = compileValue(name, k, v, maxLevel)
     end
@@ -85,6 +110,8 @@ local function compileData(name, data)
 
     DefinedData[name] = definedData
     DefinedDual[name] = definedDual
+
+    definedData.__index = definedData
     return setmetatable({}, definedData )
 end
 
@@ -94,7 +121,7 @@ end
 --  施法根据创建时的dual，选择使用的数据
 --      cast[key] -> rawget(skill, key) | dual[key]
 
-local function createSkill(name, level)
+local function createSkill(name)
     local define = ac.skill[name]
     if not define then
         return nil
@@ -105,19 +132,14 @@ local function createSkill(name, level)
         return nil
     end
 
-    if level < 1 then
-        level = 1
-    elseif level > #definedDual then
-        level = #definedDual
-    end
-
     local skill = {}
     for k, v in pairs(define) do
         skill[k] = v
     end
 
+    skill._maxLevel = #definedDual
     skill.__index = skill
-    return setmetatable(skill, definedDual[level])
+    return setmetatable(skill, definedDual[1])
 end
 
 local function updateSkill(skill, level)
@@ -168,8 +190,54 @@ local function createDefine(name)
     return defined
 end
 
+local function upgradeSkill(skill)
+    local newLevel = skill._level + 1
+    if newLevel > skill._maxLevel then
+        return
+    end
+    skill._level = newLevel
+    updateSkill(skill, newLevel)
+    if newLevel == 1 then
+        eventNotify(skill, 'onAdd')
+    else
+        eventNotify(skill, 'onUpgrade')
+    end
+end
+
+local function addSkill(mgr, name, type, slot)
+    local unit = mgr._owner
+    if not unit then
+        return nil
+    end
+
+    if type ~= '技能' and type ~= '物品' and type ~= '隐藏' then
+        log.error('技能类型错误')
+        return nil
+    end
+
+    local skill = createSkill(name)
+    if not skill then
+        return nil
+    end
+
+    local list = mgr[type]
+    list:insert(skill)
+
+    skill._owner = unit
+    skill._level = 0
+    for _ = 1, ac.toInteger(skill.initLevel, 1) do
+        upgradeSkill(skill)
+    end
+
+    return skill
+end
+
 mt.__index = mt
 mt.type = 'skill'
+
+function mt:getOwner()
+    return self._owner
+end
 
 ac.skill = setmetatable({}, {
     __index = function (self, name)
@@ -183,8 +251,12 @@ ac.skill = setmetatable({}, {
     end,
 })
 
-return {
-    createSkill = createSkill,
-    updateSkill = updateSkill,
-    createCast  = createCast,
-}
+return function (unit)
+    return {
+        _owner = unit,
+        ['技能'] = ac.list(),
+        ['物品'] = ac.list(),
+        ['隐藏'] = ac.list(),
+        addSkill = addSkill,
+    }
+end
