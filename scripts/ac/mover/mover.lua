@@ -144,7 +144,7 @@ function mt:remove()
     self._removed = true
     Movers:remove(self)
     if self._needKillMover then
-        self.mover:kill()
+        self.source:kill(self.mover)
     end
     if self._needDestroyParicle then
         self._needDestroyParicle()

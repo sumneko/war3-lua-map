@@ -28,7 +28,14 @@ local function getIdMap()
 end
 
 local function update(delta)
-    for _, u in pairs(All) do
+    for handle, u in pairs(All) do
+        if u._dead then
+            -- 如果单位死亡后被魔兽移除，则在Lua中移除
+            if jass.GetUnitTypeId(handle) == 0 then
+                u:remove()
+                goto CONTINUE
+            end
+        end
         if u.class == '生物' then
             local life = delta / 1000 * u:get '生命恢复'
             if life > 0 then
@@ -39,6 +46,7 @@ local function update(delta)
                 u:add('魔法', mana)
             end
         end
+        ::CONTINUE::
     end
 end
 
@@ -134,6 +142,7 @@ function ac.unit(handle)
         _collision = ac.toNumber(slkUnit.collision),
     }, mt)
     dbg.gchash(u, handle)
+    dbg.handle_ref(handle)
     u._gchash = handle
 
     All[handle] = u
@@ -175,22 +184,33 @@ function mt:add(k, v)
     self.attribute:add(k, v)
 end
 
+function mt:isAlive()
+    return not self._dead
+end
+
 function mt:kill(target)
-    if target == nil then
-        target = self
-    end
     if not ac.isUnit(target) then
         return
     end
-    -- TODO 英雄不能解除关联
-    local handle = target._handle
-    if true then
-        target._handle = 0
-        target._lastPoint = target:getPoint()
-        All[handle] = nil
+    if target._dead then
+        return
     end
+    local handle = target._handle
+    target._lastPoint = target:getPoint()
+    target._dead = true
     jass.KillUnit(handle)
     target:eventNotify('单位-死亡', self)
+end
+
+function mt:remove()
+    if not self._dead then
+        self:kill(self)
+    end
+    local handle = self._handle
+    self._handle = 0
+    All[handle] = nil
+    jass.RemoveUnit(handle)
+    dbg.handle_unref(handle)
 end
 
 function mt:getPoint()
@@ -205,6 +225,9 @@ function mt:setPoint(point)
     local x, y = point:getXY()
     jass.SetUnitX(self._handle, x)
     jass.SetUnitY(self._handle, y)
+    if self._lastPoint then
+        self._lastPoint = point
+    end
 end
 
 function mt:getOwner()
