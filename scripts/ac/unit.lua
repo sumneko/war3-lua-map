@@ -34,6 +34,7 @@ local function update(delta)
             -- 如果单位死亡后被魔兽移除，则在Lua中移除
             if jass.GetUnitTypeId(handle) == 0 then
                 u:remove()
+                print('remove', u)
                 goto CONTINUE
             end
         end
@@ -53,7 +54,8 @@ end
 
 local function createDestructor(unit, callback)
     if not unit._destructor then
-        unit._destructor = { sort = 0 }
+        unit._destructor = {}
+        unit._destructorIndex = 0
     end
     local function destructor()
         -- 保证每个析构器只调用一次
@@ -63,9 +65,9 @@ local function createDestructor(unit, callback)
         unit._destructor[destructor] = nil
         callback()
     end
-    local sort = unit._destructor.sort + 1
-    unit._destructor[destructor] = sort
-    unit._destructor.sort = sort
+    local index = unit._destructorIndex + 1
+    unit._destructor[destructor] = index
+    unit._destructorIndex = index
     return destructor
 end
 
@@ -169,6 +171,10 @@ mt.__index = mt
 
 mt.type = 'unit'
 
+function mt:__tostring()
+    return ('{unit|%s|%s}'):format(self:getName(), self._handle)
+end
+
 function mt:getName()
     return self._slk.Propernames or self._slk.Name
 end
@@ -212,6 +218,7 @@ function mt:remove()
     All[handle] = nil
     jass.RemoveUnit(handle)
     dbg.handle_unref(handle)
+    onRemove(self)
 end
 
 function mt:getPoint()

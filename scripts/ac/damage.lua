@@ -70,7 +70,7 @@ local function dispatch(damage)
     return true
 end
 
-ac.damage = {
+return {
     dispatch = dispatch,
     create   = create,
 }

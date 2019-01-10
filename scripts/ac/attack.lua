@@ -1,3 +1,5 @@
+local damage = require 'ac.damage'
+
 local mt = {}
 mt.__index = mt
 
@@ -5,17 +7,17 @@ mt.type = 'attack'
 mt._owner = nil
 
 function mt:shotInstant(target)
-    local damage = ac.damage.create {
+    local dmg = damage.create {
         source = self._owner,
         target = target,
         skill  = self,
         damage = self._owner:get '攻击',
     }
-    ac.damage.dispatch(damage)
+    damage.dispatch(dmg)
 end
 
 function mt:shotMissile(target)
-    local damage = ac.damage.create {
+    local dmg = damage.create {
         source = self._owner,
         target = target,
         skill  = self,
@@ -39,7 +41,7 @@ function mt:shotMissile(target)
     end
 
     function mover:onFinish()
-        ac.damage.dispatch(damage)
+        damage.dispatch(dmg)
     end
 end
 
