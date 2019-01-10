@@ -12,8 +12,21 @@ function ac.isNumber(obj)
     return type(obj) == 'number'
 end
 
+function ac.isInteger(obj)
+    return math.tointeger(obj) ~= nil
+end
+
 function ac.toNumber(obj, default)
     return type(obj) == 'number' and obj or default or 0.0
+end
+
+function ac.toInteger(obj, default)
+    local int = math.tointeger(obj)
+    if int then
+        return int
+    else
+        return default or 0
+    end
 end
 
 -- 只能存放对象，能按添加顺序遍历的数据结构，需要显性清理，不支持递归遍历
