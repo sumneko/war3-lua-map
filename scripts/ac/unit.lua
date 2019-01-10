@@ -34,7 +34,6 @@ local function update(delta)
             -- 如果单位死亡后被魔兽移除，则在Lua中移除
             if jass.GetUnitTypeId(handle) == 0 then
                 u:remove()
-                print('remove', u)
                 goto CONTINUE
             end
         end
@@ -175,6 +174,11 @@ function mt:__tostring()
     return ('{unit|%s|%s}'):format(self:getName(), self._handle)
 end
 
+function mt:__gc()
+    dbg.handle_unref(self._handle)
+    self._handle = 0
+end
+
 function mt:getName()
     return self._slk.Propernames or self._slk.Name
 end
@@ -210,14 +214,16 @@ function mt:kill(target)
 end
 
 function mt:remove()
+    if self._removed then
+        return
+    end
+    self._removed = true
     if not self._dead then
         self:kill(self)
     end
     local handle = self._handle
-    self._handle = 0
     All[handle] = nil
     jass.RemoveUnit(handle)
-    dbg.handle_unref(handle)
     onRemove(self)
 end
 
@@ -340,4 +346,5 @@ end
 return {
     all = All,
     update = update,
+    create = create,
 }
