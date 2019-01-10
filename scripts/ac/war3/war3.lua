@@ -38,9 +38,14 @@ ac.id = setmetatable({}, {__index = function (self, id)
     return self[id]
 end})
 
--- 根据unit表注册地图上的预设单位
-searchPresetUnits()
--- 注册任意单位受伤事件
-initDamage()
--- 启动计时器，开始tick
-startTimer()
+local function start()
+    -- 根据unit表注册地图上的预设单位
+    searchPresetUnits()
+    -- 注册任意单位受伤事件
+    initDamage()
+    -- 启动计时器，开始tick
+    startTimer()
+end
+
+-- 在1帧后开始游戏逻辑
+jass.TimerStart(jass.CreateTimer(), 0.0, false, start)

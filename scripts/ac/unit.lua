@@ -138,6 +138,7 @@ function ac.unit(handle)
         _gchash = handle,
         _handle = handle,
         _id = id,
+        _name = name,
         _data = data,
         _slk = slkUnit,
         _owner = ac.player(1+jass.GetPlayerId(jass.GetOwningPlayer(handle))),
@@ -180,7 +181,7 @@ function mt:__gc()
 end
 
 function mt:getName()
-    return self._slk.Propernames or self._slk.Name
+    return self._name
 end
 
 function mt:set(k, v)
