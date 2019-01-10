@@ -1,5 +1,3 @@
-local jass = require 'jass.common'
-local japi = require 'jass.japi'
 local ability = require 'ac.skill.ability'
 local type = type
 local rawget = rawget
@@ -190,6 +188,23 @@ local function createDefine(name)
     return defined
 end
 
+local function updateIcon(skill)
+    if skill._icon then
+        if skill._removed or skill._type == '隐藏' then
+            skill._icon:remove()
+            skill._icon = nil
+        end
+    else
+        if skill._removed then
+            return
+        end
+        if skill._type == '技能' then
+            skill._icon = ability(skill._slot)
+        elseif skill._type == '物品' then
+        end
+    end
+end
+
 local function upgradeSkill(skill)
     local newLevel = skill._level + 1
     if newLevel > skill._maxLevel then
@@ -231,6 +246,8 @@ local function addSkill(mgr, name, tp, slot)
         upgradeSkill(skill)
     end
 
+    updateIcon(skill)
+
     return skill
 end
 
@@ -254,6 +271,8 @@ local function removeSkill(unit, skill)
     if not list:remove(skill) then
         return false
     end
+
+    updateIcon(skill)
 
     eventNotify(skill, 'onRemove')
 
@@ -299,6 +318,7 @@ return function (unit)
         ['技能'] = ac.list(),
         ['物品'] = ac.list(),
         ['隐藏'] = ac.list(),
+
         addSkill = addSkill,
     }
 end

@@ -1,4 +1,4 @@
-//TESH.scrollpos=31
+//TESH.scrollpos=14
 //TESH.alwaysfold=0
 <?
 local slk = require 'slk'
@@ -19,24 +19,6 @@ local orderList = {
     'unrobogoblin',
 }
 
--- 每个head能产生1296个ID，应该够用了
-local function idFactory(head)
-    local ids = {}
-    local chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-    for x = 1, #chars do
-        for y = 1, #chars do
-            ids[#ids+1] = ('%s%s%s'):format(head, chars:sub(x, x), chars:sub(y, y))
-        end
-    end
-    
-    return ids
-end
-
--- 主动技能的模板通魔，head == 'SS'
-local skillIds = idFactory('SS')
--- 被动技能的模板月刃，head == 'SP'
-local passiveIds = idFactory('SP')
 -- 为每个格子分配50个技能，共600个
 local i = 0
 for x = 0, 3 do
@@ -44,7 +26,8 @@ for x = 0, 3 do
         for _ = 1, 50 do
             i = i + 1
             local order = orderList[x*3+y+1]
-            slk.ability.ANcl:new(skillIds[i]) {
+            local tag = '主动技能-' .. tonumber(i)
+            slk.ability.ANcl:new(tag) {
                 Name = '主动技能',
                 Buttonpos = {x, y},
                 UnButtonpos = {x, y},
@@ -62,7 +45,8 @@ for x = 0, 3 do
                 Rng = {0, 0},
             }
             
-            slk.ability.Amgl:new(passiveIds[i]) {
+            local tag = '被动技能-' .. tonumber(i)
+            slk.ability.Amgl:new(tag) {
                 Name = '被动技能',
                 Buttonpos = {x, y},
                 UnButtonpos = {x, y},
