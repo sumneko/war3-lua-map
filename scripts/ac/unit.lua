@@ -28,6 +28,7 @@ local function getIdMap()
 end
 
 local function update(delta)
+    -- 由于key是整数，因此遍历顺序是固定的
     for handle, u in pairs(All) do
         if u._dead then
             -- 如果单位死亡后被魔兽移除，则在Lua中移除

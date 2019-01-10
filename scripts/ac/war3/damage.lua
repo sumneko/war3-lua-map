@@ -19,6 +19,7 @@ local function createTrigger()
     end
     Trg = jass.CreateTrigger()
     jass.TriggerAddCondition(Trg, Condition)
+    -- key是整数，遍历顺序是固定的
     for handle in pairs(unit.all) do
         if jass.GetUnitAbilityLevel(handle, ac.id.Aloc) == 0 then
             jass.TriggerRegisterUnitEvent(Trg, handle, 52) -- EVENT_UNIT_DAMAGED

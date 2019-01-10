@@ -1,4 +1,5 @@
 local moverTarget = require 'ac.mover.target'
+local moverLine = require 'ac.mover.line'
 local parabola = require 'ac.mover.parabola'
 
 local Movers = ac.list()
@@ -8,7 +9,6 @@ mt.__index = mt
 
 mt.type = 'mover'
 mt.source = nil
-mt.speed = 1000.0
 mt._process = 0.0
 mt._height = 0.0
 
@@ -112,6 +112,8 @@ local function create(data)
 
     if mover.moverType == 'target' then
         mover.project = moverTarget
+    elseif mover.moverType == 'line' then
+        mover.project = moverLine
     else
         return nil, '未知的运动类型'
     end
