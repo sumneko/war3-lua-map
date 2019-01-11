@@ -283,6 +283,50 @@ local function removeSkill(unit, skill)
     return true
 end
 
+local function findSkillByString(list, name)
+    if not list then
+        return nil
+    end
+    for skill in list:pairs() do
+        if skill._name == name then
+            return skill
+        end
+    end
+    return nil
+end
+
+local function findSkillBySlot(list, slot)
+    if not list then
+        return nil
+    end
+    for skill in list:pairs() do
+        if skill._slot == slot then
+            return skill
+        end
+    end
+    return nil
+end
+
+local function findSkill(mgr, name, tp)
+    if type(name) == 'string' then
+        if tp then
+            local skill = findSkillByString(mgr[tp], name)
+            return skill
+        else
+            local skill =  findSkillByString(mgr['技能'], name)
+                        or findSkillByString(mgr['物品'], name)
+                        or findSkillByString(mgr['隐藏'], name)
+            return skill
+        end
+    else
+        if not tp then
+            log.error('使用索引查找技能必须指定类型')
+            return nil
+        end
+        local skill = findSkillBySlot(mgr[tp], name)
+    end
+end
+
 local function loadString(skill, str)
     return str:gsub('${(.-)}', function (pat)
         local pos = pat:find(':', 1, true)
@@ -350,5 +394,6 @@ return function (unit)
         ['隐藏'] = ac.list(),
 
         addSkill = addSkill,
+        findSkill = findSkill,
     }
 end

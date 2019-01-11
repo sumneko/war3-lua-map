@@ -74,7 +74,7 @@ end
 local function onRemove(unit)
     -- 解除玩家英雄
     if unit:isHero() then
-        unit._ower:removeHero(unit)
+        unit._owner:removeHero(unit)
     end
 
     -- 执行析构器
@@ -212,8 +212,9 @@ end
 
 function mt:isHero()
     -- 通过检查单位id的第一个字母是否为大写决定是否是英雄
-    local c = self._id:sub(1, 1)
-    return c:upper() == c
+    local char = self._id:sub(1, 1)
+    local code = char:byte()
+    return code >= 65 and code <= 90
 end
 
 function mt:kill(target)
@@ -325,6 +326,16 @@ function mt:addSkill(name, type, slot)
         return nil
     end
     return self._skill:addSkill(name, type, slot)
+end
+
+function mt:findSkill(name, type)
+    if self._removed then
+        return nil
+    end
+    if not self._skill then
+        return nil
+    end
+    return self._skill:findSkill(name, type)
 end
 
 function mt:event(name)

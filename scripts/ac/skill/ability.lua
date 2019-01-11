@@ -105,6 +105,12 @@ function mt:remove()
     releaseId(self)
 end
 
+function mt:handle()
+    local unit = self._skill._owner
+    local id = self._id
+    return japi.EXGetUnitAbility(unit._handle, ac.id[id])
+end
+
 function mt:updateTitle()
     local skill = self._skill
     local title = skill.title or skill.name or skill._name
@@ -112,7 +118,7 @@ function mt:updateTitle()
     if title == self._cache.title then
         return
     end
-    self.title = title
+    self._cache.title = title
     japi.EXSetAbilityString(ac.id[self._id], 1, 0xD7, title)
 end
 
@@ -123,7 +129,7 @@ function mt:updateDescription()
     if desc == self._cache.description then
         return
     end
-    self.description = desc
+    self._cache.description = desc
     japi.EXSetAbilityString(ac.id[self._id], 1, 0xDA, desc)
 end
 
@@ -133,14 +139,25 @@ function mt:updateIcon()
     if icon == self._cache.icon then
         return
     end
-    self.icon = icon
+    self._cache.icon = icon
     japi.EXSetAbilityString(ac.id[self._id], 1, 0xCC, icon)
+end
+
+function mt:updateHotkey()
+    local skill = self._skill
+    local hotkey = skill.hotkey
+    if hotkey == self._cache.hotkey then
+        return
+    end
+    self._cache.hotkey = hotkey
+    japi.EXSetAbilityDataInteger(self:handle(), 1, 0xC8, hotkey and hotkey:byte() or 0)
 end
 
 function mt:updateAll()
     self:updateTitle()
     self:updateDescription()
     self:updateIcon()
+    self:updateHotkey()
 end
 
 return function (skill)
