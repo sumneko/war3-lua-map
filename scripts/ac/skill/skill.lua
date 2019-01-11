@@ -3,6 +3,8 @@ local type = type
 local rawget = rawget
 local getmetatable = getmetatable
 local setmetatable = setmetatable
+local tostring = tostring
+local pcall = pcall
 
 local METHOD = {
     ['onAdd']     = '技能-获得',
@@ -211,6 +213,7 @@ local function upgradeSkill(skill)
         return
     end
     skill._level = newLevel
+    skill.level = newLevel
     updateSkill(skill, newLevel)
     if newLevel == 1 then
         eventNotify(skill, 'onAdd')
@@ -242,6 +245,7 @@ local function addSkill(mgr, name, tp, slot)
     skill._level = 0
     skill._type = tp
     skill._slot = slot
+    skill.level = 0
     for _ = 1, ac.toInteger(skill.initLevel, 1) do
         upgradeSkill(skill)
     end
@@ -279,6 +283,21 @@ local function removeSkill(unit, skill)
     return true
 end
 
+local function loadString(skill, str)
+    return str:gsub('${(.-)}', function (pat)
+        local pos = pat:find(':', 1, true)
+        if pos then
+            local key = pat:sub(1, pos-1)
+            local value = skill[key]
+            local fmt = pat:sub(pos+1)
+            return ('%'..fmt):format(value)
+        else
+            local value = skill[pat]
+            return tostring(value)
+        end
+    end)
+end
+
 mt.__index = mt
 mt.type = 'skill'
 
@@ -298,6 +317,17 @@ end
 function mt:get(k)
     local skill = self._parent or self
     return skill[k]
+end
+
+function mt:loadString(str)
+    str = tostring(str)
+
+    local suc, res = pcall(loadString, self, str)
+    if suc then
+        return res
+    else
+        return str
+    end
 end
 
 ac.skill = setmetatable({}, {

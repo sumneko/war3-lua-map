@@ -103,7 +103,8 @@ end
 
 function mt:updateTitle()
     local skill = self._skill
-    local title = skill.name or skill._name
+    local title = skill.title or skill.name or skill._name
+    title = skill:loadString(title)
     if title == self.title then
         return
     end
@@ -114,6 +115,7 @@ end
 function mt:updateDescription()
     local skill = self._skill
     local desc = skill.description
+    desc = skill:loadString(desc)
     if desc == self.description then
         return
     end
