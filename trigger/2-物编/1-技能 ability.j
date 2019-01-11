@@ -22,11 +22,12 @@ local orderList = {
 -- 为每个格子分配50个技能，共600个
 local SIZE = 50
 local i = 0
+local slot = 0
 for x = 0, 3 do
-    for y = 0, 2 do
+    for y = 2, 0, -1 do
+        slot = slot + 1
         for _ = 1, SIZE do
             i = i + 1
-            local slot = x * 3 + y + 1
             local order = orderList[slot]
             local tag = '主动技能-' .. tostring(i)
             slk.ability.ANcl:new(tag) {
