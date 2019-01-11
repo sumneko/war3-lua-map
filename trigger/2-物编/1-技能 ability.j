@@ -1,4 +1,4 @@
-//TESH.scrollpos=15
+//TESH.scrollpos=19
 //TESH.alwaysfold=0
 <?
 local slk = require 'slk'
@@ -23,8 +23,8 @@ local orderList = {
 local SIZE = 50
 local i = 0
 local slot = 0
-for x = 0, 3 do
-    for y = 2, 0, -1 do
+for y = 2, 0, -1 do
+    for x = 0, 3 do
         slot = slot + 1
         for _ = 1, SIZE do
             i = i + 1
@@ -43,7 +43,9 @@ for x = 0, 3 do
                 hero = 0,
                 levels = 2,
                 DataA = {0, 0},
+                DataC = {1, 1},
                 DataD = {0, 0},
+                DataE = {0, 0},
                 DataF = {order, order},
                 Rng = {0, 0},
             }

@@ -41,6 +41,9 @@ local function init()
 end
 
 local function getId(skill)
+    if skill.id then
+        return skill.id, skill.id
+    end
     local slot = ac.toInteger(skill._slot)
     if not slot then
         return nil

@@ -161,6 +161,8 @@ function ac.unit(handle)
         u._attack = attack(u, u._data.attack)
         -- 初始化技能
         u._skill = skill(u)
+        -- 添加命令图标
+        u:addSkill('@命令', '技能')
 
         ac.game:eventNotify('单位-创建', u)
     elseif class == '弹道' then
