@@ -18,6 +18,7 @@ local COMMAND = {
     ['保持'] = KEYBORD['H'],
     ['停止'] = KEYBORD['S'],
     ['休眠'] = KEYBORD['Z'],
+    ['警戒'] = KEYBORD['X']
 }
 local LastSelectClock = 0
 
@@ -101,6 +102,9 @@ local function instantCommand(cmd)
     elseif cmd == '停止' then
         message.order_immediate(ORDER['stop'], 0)
     elseif cmd == '休眠' then
+        message.order_target(ORDER['AImove'], 0, 1, 0, FLAG['瞬发'])
+    elseif cmd == '警戒' then
+        message.order_immediate(ORDER['patrol'], 0)
     end
 end
 
@@ -135,6 +139,10 @@ local function onKeyDown(msg)
     elseif msg.code == COMMAND['休眠'] then
         checkSelectHero()
         instantCommand '休眠'
+        return false
+    elseif msg.code == COMMAND['警戒'] then
+        checkSelectHero()
+        instantCommand '警戒'
         return false
     end
 

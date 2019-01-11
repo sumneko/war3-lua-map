@@ -153,11 +153,55 @@ function mt:updateHotkey()
     japi.EXSetAbilityDataInteger(self:handle(), 1, 0xC8, hotkey and hotkey:byte() or 0)
 end
 
+function mt:updateRange()
+    local skill = self._skill
+    local range = ac.toNumber(skill.range)
+    if range == self._cache.range then
+        return
+    end
+    self._cache.range = range
+    japi.EXSetAbilityDataReal(self:handle(), 1, 0x6B, range)
+end
+
+function mt:updateTargetType()
+    local id = self._id
+    if slk.ability[id].code ~= 'ANcl' then
+        return
+    end
+    local skill = self._skill
+    local targetType = skill.targetType
+    if self._cache.targetType == targetType then
+        return
+    end
+    self._cache.targetType = targetType
+    if targetType == '单位' then
+        japi.EXSetAbilityDataReal(self:handle(), 1, 0x6D, 1)
+    elseif targetType == '点' then
+        japi.EXSetAbilityDataReal(self:handle(), 1, 0x6D, 2)
+    elseif targetType == '单位或点' then
+        japi.EXSetAbilityDataReal(self:handle(), 1, 0x6D, 3)
+    else
+        japi.EXSetAbilityDataReal(self:handle(), 1, 0x6D, 0)
+    end
+    -- 刷新一下
+    self:refresh()
+end
+
+function mt:refresh()
+    local skill = self._skill
+    local unit = skill._owner
+    local id = self._id
+    jass.SetUnitAbilityLevel(unit._handle, ac.id[id], 2)
+    jass.SetUnitAbilityLevel(unit._handle, ac.id[id], 1)
+end
+
 function mt:updateAll()
     self:updateTitle()
     self:updateDescription()
     self:updateIcon()
     self:updateHotkey()
+    self:updateRange()
+    self:updateTargetType()
 end
 
 return function (skill)
