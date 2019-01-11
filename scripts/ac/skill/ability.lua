@@ -101,6 +101,42 @@ function mt:remove()
     releaseId(self)
 end
 
+function mt:updateTitle()
+    local skill = self._skill
+    local title = skill.name or skill._name
+    if title == self.title then
+        return
+    end
+    self.title = title
+    japi.EXSetAbilityString(ac.id[self._id], 1, 0xD7, title)
+end
+
+function mt:updateDescription()
+    local skill = self._skill
+    local desc = skill.description
+    if desc == self.description then
+        return
+    end
+    self.description = desc
+    japi.EXSetAbilityString(ac.id[self._id], 1, 0xDA, desc)
+end
+
+function mt:updateIcon()
+    local skill = self._skill
+    local icon = skill.icon
+    if icon == self.icon then
+        return
+    end
+    self.icon = icon
+    japi.EXSetAbilityString(ac.id[self._id], 1, 0xCC, icon)
+end
+
+function mt:updateAll()
+    self:updateTitle()
+    self:updateDescription()
+    self:updateIcon()
+end
+
 return function (skill)
     init()
 
@@ -120,6 +156,8 @@ return function (skill)
         releaseId(icon)
         return nil
     end
+
+    icon:updateAll()
 
     return icon
 end
