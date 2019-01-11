@@ -199,7 +199,7 @@ local function updateIcon(skill)
             return
         end
         if skill._type == '技能' then
-            skill._icon = ability(skill._slot)
+            skill._icon = ability(skill)
         elseif skill._type == '物品' then
         end
     end

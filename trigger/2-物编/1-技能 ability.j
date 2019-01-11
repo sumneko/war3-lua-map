@@ -1,4 +1,4 @@
-//TESH.scrollpos=14
+//TESH.scrollpos=15
 //TESH.alwaysfold=0
 <?
 local slk = require 'slk'
@@ -20,15 +20,17 @@ local orderList = {
 }
 
 -- 为每个格子分配50个技能，共600个
+local SIZE = 50
 local i = 0
 for x = 0, 3 do
     for y = 0, 2 do
-        for _ = 1, 50 do
+        for _ = 1, SIZE do
             i = i + 1
-            local order = orderList[x*3+y+1]
-            local tag = '主动技能-' .. tonumber(i)
+            local slot = x * 3 + y + 1
+            local order = orderList[slot]
+            local tag = '主动技能-' .. tostring(i)
             slk.ability.ANcl:new(tag) {
-                Name = '主动技能',
+                Name = '@主动技能-' .. tostring(slot),
                 Buttonpos = {x, y},
                 UnButtonpos = {x, y},
                 Researchbuttonpos = {x, y},
@@ -45,9 +47,9 @@ for x = 0, 3 do
                 Rng = {0, 0},
             }
             
-            local tag = '被动技能-' .. tonumber(i)
+            local tag = '被动技能-' .. tostring(i)
             slk.ability.Amgl:new(tag) {
-                Name = '被动技能',
+                Name = '@被动技能-' .. tostring(slot),
                 Buttonpos = {x, y},
                 UnButtonpos = {x, y},
                 Researchbuttonpos = {x, y},
