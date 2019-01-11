@@ -72,6 +72,12 @@ local function createDestructor(unit, callback)
 end
 
 local function onRemove(unit)
+    -- 解除玩家英雄
+    if unit:isHero() then
+        unit._ower:removeHero(unit)
+    end
+
+    -- 执行析构器
     local destructors = unit._destructor
     if destructors then
         -- 保证所有人都按固定的顺序执行
@@ -138,7 +144,7 @@ function ac.unit(handle)
         class = class,
         _gchash = handle,
         _handle = handle,
-        _id = id,
+        _id = ac.id[id],
         _name = name,
         _data = data,
         _slk = slkUnit,
@@ -163,6 +169,10 @@ function ac.unit(handle)
         u._skill = skill(u)
         -- 添加命令图标
         u:addSkill('@命令', '技能')
+        -- 设置为玩家的英雄
+        if u:isHero() then
+            u._owner:addHero(u)
+        end
 
         ac.game:eventNotify('单位-创建', u)
     elseif class == '弹道' then
@@ -198,6 +208,12 @@ end
 
 function mt:isAlive()
     return not self._dead
+end
+
+function mt:isHero()
+    -- 通过检查单位id的第一个字母是否为大写决定是否是英雄
+    local c = self._id:sub(1, 1)
+    return c:upper() == c
 end
 
 function mt:kill(target)

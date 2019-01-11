@@ -3,6 +3,7 @@ local jass = require 'jass.common'
 local japi = require 'jass.japi'
 
 local Pool
+local Cache = {}
 
 local function poolAdd(name, obj)
     local pool = Pool[name]
@@ -108,7 +109,7 @@ function mt:updateTitle()
     local skill = self._skill
     local title = skill.title or skill.name or skill._name
     title = skill:loadString(title)
-    if title == self.title then
+    if title == self._cache.title then
         return
     end
     self.title = title
@@ -119,7 +120,7 @@ function mt:updateDescription()
     local skill = self._skill
     local desc = skill.description
     desc = skill:loadString(desc)
-    if desc == self.description then
+    if desc == self._cache.description then
         return
     end
     self.description = desc
@@ -129,7 +130,7 @@ end
 function mt:updateIcon()
     local skill = self._skill
     local icon = skill.icon
-    if icon == self.icon then
+    if icon == self._cache.icon then
         return
     end
     self.icon = icon
@@ -150,10 +151,15 @@ return function (skill)
         return nil
     end
 
+    if not Cache[id] then
+        Cache[id] = {}
+    end
+
     local icon = setmetatable({
         _name = name,
         _id = id,
         _skill = skill,
+        _cache = Cache[id],
     }, mt)
 
     local ok = addAbility(icon)
