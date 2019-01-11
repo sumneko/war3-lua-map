@@ -178,11 +178,6 @@ function mt:__tostring()
     return ('{unit|%s|%s}'):format(self:getName(), self._handle)
 end
 
-function mt:__gc()
-    dbg.handle_unref(self._handle)
-    self._handle = 0
-end
-
 function mt:getName()
     return self._name
 end
@@ -229,6 +224,9 @@ function mt:remove()
     All[handle] = nil
     jass.RemoveUnit(handle)
     onRemove(self)
+
+    self._handle = 0
+    dbg.handle_unref(handle)
 end
 
 function mt:getPoint()
