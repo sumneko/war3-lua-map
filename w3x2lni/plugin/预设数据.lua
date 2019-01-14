@@ -1,0 +1,23 @@
+local mt = {}
+
+mt.info = {
+    name = '预设数据',
+    version = 1.0,
+    author = '最萌小汐',
+    description = '将物编数据设置为标准值。'
+}
+
+function mt:on_full(w2l)
+    for _, unit in pairs(w2l.slk.unit) do
+        -- 生命回复类型
+        unit.regentype = 'none'
+        -- 魔法回复
+        unit.regenmana = 0
+        -- 攻击骰子数量
+        unit.dice1 = 1
+        -- 攻击骰子面数
+        unit.sides1 = 1
+    end
+end
+
+return mt
