@@ -1,8 +1,9 @@
 local message = require 'jass.message'
 local jass = require 'jass.common'
-local command = require 'ac.command'
+local slk = require 'jass.slk'
 
 local ORDER = require 'ac.war3.order'
+local CMD_ORDER = ORDER[slk.ability['@CMD'].DataF]
 local PROTO = require 'ac.message.proto'
 local KEYBORD = message.keyboard
 local FLAG = {
@@ -83,15 +84,6 @@ local function pressKey(key)
     end
 end
 
-local function waitCommand(cmd)
-    local unit = getSelect()
-    local skill = unit:findSkill '@命令'
-    if not skill then
-        return
-    end
-    pressKey(skill.hotkey)
-end
-
 local function proto(id, arg)
     if arg == nil then
         arg = 0
@@ -99,18 +91,27 @@ local function proto(id, arg)
     message.order_target(ORDER['AImove'], id, arg, 0, FLAG['瞬发'])
 end
 
-local function instantCommand(cmd)
+local function stackCommand(cmd)
+    proto(PROTO[cmd])
+end
+
+local function waitCommand(cmd)
     local unit = getSelect()
     local skill = unit:findSkill '@命令'
     if not skill then
         return
     end
+    stackCommand(cmd)
+    pressKey(skill.hotkey)
+end
+
+local function instantCommand(cmd)
     if cmd == '保持' then
         message.order_immediate(ORDER['holdposition'], 0)
     elseif cmd == '停止' then
         message.order_immediate(ORDER['stop'], 0)
     elseif cmd == '休眠' then
-        proto(PROTO['Sleep'])
+        proto(PROTO['休眠'])
     elseif cmd == '警戒' then
         message.order_immediate(ORDER['patrol'], 0)
     end
@@ -134,7 +135,7 @@ local function onKeyDown(msg)
         return false
     elseif msg.code == COMMAND['巡逻'] then
         checkSelectHero()
-        waitCommand '移动'
+        waitCommand '巡逻'
         return false
     elseif msg.code == COMMAND['保持'] then
         checkSelectHero()
@@ -168,6 +169,19 @@ local function onKeyUp(msg)
     return true
 end
 
+local function onLeftClick()
+    return true
+end
+
+local function onClickAbility(msg)
+    local order = msg.order
+    if order == CMD_ORDER then
+        stackCommand '攻击'
+        return true
+    end
+    return true
+end
+
 function message.hook(msg)
     if msg.type == 'key_down' then
         if msg.state == 0 then
@@ -175,6 +189,14 @@ function message.hook(msg)
         end
     elseif msg.type == 'key_up' then
         return onKeyUp(msg)
+    elseif msg.type == 'mouse_down' then
+        if msg.code == 1 then
+            return onLeftClick()
+        end
+    elseif msg.type == 'mouse_ability' then
+        if msg.code == 1 then
+            return onClickAbility(msg)
+        end
     end
     return true
 end
