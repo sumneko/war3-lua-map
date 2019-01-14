@@ -3,6 +3,7 @@ local jass = require 'jass.common'
 local command = require 'ac.command'
 
 local ORDER = require 'ac.war3.order'
+local PROTO = require 'ac.message.proto'
 local KEYBORD = message.keyboard
 local FLAG = {
     ['队列'] = 1 << 0,
@@ -91,6 +92,13 @@ local function waitCommand(cmd)
     pressKey(skill.hotkey)
 end
 
+local function proto(id, arg)
+    if arg == nil then
+        arg = 0
+    end
+    message.order_target(ORDER['AImove'], id, arg, 0, FLAG['瞬发'])
+end
+
 local function instantCommand(cmd)
     local unit = getSelect()
     local skill = unit:findSkill '@命令'
@@ -102,7 +110,7 @@ local function instantCommand(cmd)
     elseif cmd == '停止' then
         message.order_immediate(ORDER['stop'], 0)
     elseif cmd == '休眠' then
-        message.order_target(ORDER['AImove'], 0, 1, 0, FLAG['瞬发'])
+        proto(PROTO['Sleep'])
     elseif cmd == '警戒' then
         message.order_immediate(ORDER['patrol'], 0)
     end

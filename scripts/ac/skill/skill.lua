@@ -374,6 +374,14 @@ function mt:loadString(str)
     end
 end
 
+function mt:getOrder()
+    local icon = self._icon
+    if not icon then
+        return nil
+    end
+    return icon:getOrder()
+end
+
 ac.skill = setmetatable({}, {
     __index = function (self, name)
         local skill = createDefine(name)

@@ -1,4 +1,4 @@
-//TESH.scrollpos=19
+//TESH.scrollpos=30
 //TESH.alwaysfold=0
 <?
 local slk = require 'slk'
@@ -43,6 +43,7 @@ for y = 2, 0, -1 do
                 hero = 0,
                 levels = 2,
                 DataA = {0, 0},
+                DataB = {3, 3},
                 DataC = {1, 1},
                 DataD = {0, 0},
                 DataE = {0, 0},

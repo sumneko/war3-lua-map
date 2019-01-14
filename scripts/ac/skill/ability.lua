@@ -204,6 +204,10 @@ function mt:updateAll()
     self:updateTargetType()
 end
 
+function mt:getOrder()
+    return self._slk.DataF
+end
+
 return function (skill)
     init()
 
@@ -221,6 +225,7 @@ return function (skill)
         _id = id,
         _skill = skill,
         _cache = Cache[id],
+        _slk = slk.ability[id],
     }, mt)
 
     local ok = addAbility(icon)
