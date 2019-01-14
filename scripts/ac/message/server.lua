@@ -107,10 +107,28 @@ local function onTargetOrder(unit, target)
     end
 end
 
+local function searchAbilityId(unit, id)
+    for skill in unit:eachSkill() do
+        if skill._icon and skill._icon._id == id then
+            return skill
+        end
+    end
+    return nil
+end
+
 local function onCastStart(unit)
     local id = jass.GetSpellAbilityId()
     if id == ac.id['@CMD'] then
         order(unit, 'stop')
+    else
+        -- 检查发动技能
+        local skill = searchAbilityId(unit, ac.id[id])
+        if skill then
+            local target = ac.unit(jass.GetSpellTargetUnit())
+            local x = jass.GetSpellTargetX()
+            local y = jass.GetSpellTargetY()
+            skill:castByClient(target, x, y)
+        end
     end
 end
 

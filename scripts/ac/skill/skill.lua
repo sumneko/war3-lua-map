@@ -7,9 +7,14 @@ local tostring = tostring
 local pcall = pcall
 
 local METHOD = {
-    ['onAdd']     = '技能-获得',
-    ['onRemove']  = '技能-失去',
-    ['onUpgrade'] = '技能-升级',
+    ['onAdd']         = '技能-获得',
+    ['onRemove']      = '技能-失去',
+    ['onUpgrade']     = '技能-升级',
+    ['onCastStart']   = '技能-施法开始',
+    ['onCastChannel'] = '技能-施法引导',
+    ['onCastShot']    = '技能-施法出手',
+    ['onCastFinish']  = '技能-施法完成',
+    ['onCastStop']    = '技能-施法停止',
 }
 
 -- 技能分为4层：
@@ -84,6 +89,7 @@ local function compileDual(name, definedData, maxLevel)
         dual[lv] = {}
         dual[lv]._name = name
         dual[lv].__index = dual[lv]
+        dual[lv].__tostring = mt.__tostring
         setmetatable(dual[lv], mt)
     end
     for k, v in pairs(definedData) do
@@ -275,6 +281,7 @@ local function removeSkill(unit, skill)
     if not list:remove(skill) then
         return false
     end
+    list:clean()
 
     updateIcon(skill)
 
@@ -324,6 +331,36 @@ local function findSkill(mgr, name, tp)
             return nil
         end
         local skill = findSkillBySlot(mgr[tp], name)
+        return skill
+    end
+end
+
+local function eachSkill(mgr, tp)
+    local skills = {}
+    if tp then
+        local list = mgr[tp]
+        if not list then
+            log.error('技能类型不正确')
+            return function () end
+        end
+        for skill in list:pairs() do
+            skills[#skills+1] = skill
+        end
+    else
+        for skill in mgr['技能']:pairs() do
+            skills[#skills+1] = skill
+        end
+        for skill in mgr['物品']:pairs() do
+            skills[#skills+1] = skill
+        end
+        for skill in mgr['隐藏']:pairs() do
+            skills[#skills+1] = skill
+        end
+    end
+    local i = 0
+    return function ()
+        i = i + 1
+        return skills[i]
     end
 end
 
@@ -342,11 +379,84 @@ local function loadString(skill, str)
     end)
 end
 
+local function onCastStop(cast)
+    local unit = cast._owner
+    callMethod(cast, 'onCastStop')
+end
+
+local function onCastFinish(cast)
+    callMethod(cast, 'onCastFinish')
+
+    local time = ac.toNumber(cast.castFinishTime)
+    if time > 0 then
+        ac.wait(time, function ()
+            onCastStop(cast)
+        end)
+    else
+        onCastStop(cast)
+    end
+end
+
+local function onCastShot(cast)
+    callMethod(cast, 'onCastShot')
+
+    local time = ac.toNumber(cast.castShotTime)
+    if time > 0 then
+        ac.wait(time, function ()
+            onCastFinish(cast)
+        end)
+    else
+        onCastFinish(cast)
+    end
+end
+
+local function onCastChannel(cast)
+    callMethod(cast, 'onCastChannel')
+
+    local time = ac.toNumber(cast.castChannelTime)
+    if time > 0 then
+        ac.wait(time, function ()
+            onCastShot(cast)
+        end)
+    else
+        onCastShot(cast)
+    end
+end
+
+local function onCastStart(cast)
+    local unit = cast._owner
+
+    unit:stopCast()
+
+    callMethod(cast, 'onCastStart')
+
+    local time = ac.toNumber(cast.castStartTime)
+    if time > 0 then
+        ac.wait(time, function ()
+            onCastChannel(cast)
+        end)
+    else
+        onCastChannel(cast)
+    end
+end
+
 mt.__index = mt
 mt.type = 'skill'
 
+function mt:__tostring()
+    if self._parent then
+        return ('{cast|%s} -> %s'):format(self:getName(), self:getOwner())
+    else
+        return ('{skill|%s} -> %s'):format(self:getName(), self:getOwner())
+    end
+end
+
 function mt:getOwner()
     return self._owner
+end
+
+function mt:getName()
+    return self._name
 end
 
 function mt:remove()
@@ -382,6 +492,33 @@ function mt:getOrder()
     return icon:getOrder()
 end
 
+function mt:castByClient(target, x, y)
+    -- 合法性检查
+    if not self._icon then
+        return false
+    end
+
+    local cast
+    if self.targetType == '点' then
+        cast = createCast(self)
+        cast._targetPoint = ac.point(x, y)
+    elseif self.targetType == '单位' then
+        if not target then
+            return false
+        end
+        cast = createCast(self)
+        cast._targetUnit = ac.point(x, y)
+    elseif self.targetType == '单位或点' then
+        cast = createCast(self)
+        cast._targetUnit = target
+        cast._targetPoint = ac.point(x, y)
+    else
+        cast = createCast(self)
+    end
+
+    onCastStart(cast)
+end
+
 ac.skill = setmetatable({}, {
     __index = function (self, name)
         local skill = createDefine(name)
@@ -401,7 +538,8 @@ return function (unit)
         ['物品'] = ac.list(),
         ['隐藏'] = ac.list(),
 
-        addSkill = addSkill,
+        addSkill  = addSkill,
         findSkill = findSkill,
+        eachSkill = eachSkill,
     }
 end

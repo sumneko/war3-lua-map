@@ -21,6 +21,10 @@ function mt:on_full(w2l)
         unit.dice1 = 1
         -- 攻击骰子面数
         unit.sides1 = 1
+        -- 魔法施放点
+        unit.castpt = 0
+        -- 魔法施放回复
+        unit.castbsw = 0
     end
 end
 

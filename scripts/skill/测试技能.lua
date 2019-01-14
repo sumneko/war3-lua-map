@@ -7,3 +7,7 @@ end
 function mt:onRemove()
     print('失去：', self)
 end
+
+function mt:onCastShot()
+    print('onCastShot')
+end

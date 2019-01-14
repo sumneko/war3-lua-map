@@ -195,6 +195,16 @@ function mt:refresh()
     jass.SetUnitAbilityLevel(unit._handle, ac.id[id], 1)
 end
 
+function mt:updateCost()
+    local skill = self._skill
+    local cost = ac.toNumber(skill.cost)
+    if cost == self._cache.cost then
+        return
+    end
+    self._cache.cost = cost
+    japi.EXSetAbilityDataReal(self:handle(), 1, 0x68, cost)
+end
+
 function mt:updateAll()
     self:updateTitle()
     self:updateDescription()
@@ -202,6 +212,7 @@ function mt:updateAll()
     self:updateHotkey()
     self:updateRange()
     self:updateTargetType()
+    self:updateCost()
 end
 
 function mt:getOrder()

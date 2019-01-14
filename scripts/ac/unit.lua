@@ -6,6 +6,7 @@ local attribute = require 'ac.attribute'
 local attack = require 'ac.attack'
 local mover = require 'ac.mover'
 local skill = require 'ac.skill'
+local ORDER = require 'ac.war3.order'
 
 local All = {}
 local IdMap
@@ -336,6 +337,16 @@ function mt:findSkill(name, type)
         return nil
     end
     return self._skill:findSkill(name, type)
+end
+
+function mt:eachSkill(tp)
+    if not self._skill then
+        return function () end
+    end
+    return self._skill:eachSkill(tp)
+end
+
+function mt:stopCast()
 end
 
 function mt:event(name)
