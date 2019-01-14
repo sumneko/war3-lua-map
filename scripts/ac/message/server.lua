@@ -11,12 +11,14 @@ local EVENT = {
     Order       = jass.EVENT_PLAYER_UNIT_ISSUED_ORDER,
     PointOrder  = jass.EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER,
     TargetOrder = jass.EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER,
+    CastStart   = jass.EVENT_PLAYER_UNIT_SPELL_CHANNEL,
 }
 
 for i = 0, 15 do
     jass.TriggerRegisterPlayerUnitEvent(TRG, jass.Player(i), EVENT.Order, nil)
     jass.TriggerRegisterPlayerUnitEvent(TRG, jass.Player(i), EVENT.PointOrder, nil)
     jass.TriggerRegisterPlayerUnitEvent(TRG, jass.Player(i), EVENT.TargetOrder, nil)
+    jass.TriggerRegisterPlayerUnitEvent(TRG, jass.Player(i), EVENT.CastStart, nil)
 end
 
 local function stackCommand(cmd)
@@ -66,7 +68,6 @@ local function onCommand(unit, target)
         return
     end
     if target then
-        print('targetOrder', cmd)
         if cmd == '攻击' then
             targetOrder(unit, 'attack', target)
         elseif cmd == '移动' then
@@ -106,7 +107,13 @@ local function onTargetOrder(unit, target)
     end
 end
 
--- 命令事件
+local function onCastStart(unit)
+    local id = jass.GetSpellAbilityId()
+    if id == ac.id['@CMD'] then
+        order(unit, 'stop')
+    end
+end
+
 jass.TriggerAddCondition(TRG, jass.Condition(function ()
     local eventId = jass.GetTriggerEventId()
     local unit = ac.unit(jass.GetTriggerUnit())
@@ -120,5 +127,7 @@ jass.TriggerAddCondition(TRG, jass.Condition(function ()
         if target then
             onTargetOrder(unit, target)
         end
+    elseif eventId == EVENT.CastStart then
+        onCastStart(unit)
     end
 end))
