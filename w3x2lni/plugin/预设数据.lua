@@ -8,6 +8,10 @@ mt.info = {
 }
 
 function mt:on_full(w2l)
+    -- TODO 如果是YDWE打开lni地图，则不执行以下代码
+    if w2l.setting.mode == 'obj' and w2l.log_path:filename():string() == 'w3x2lni' then
+        return
+    end
     for _, unit in pairs(w2l.slk.unit) do
         -- 生命回复类型
         unit.regentype = 'none'
