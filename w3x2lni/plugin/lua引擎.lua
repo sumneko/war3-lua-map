@@ -26,7 +26,7 @@ local function injectJass(w2l, buf)
     bufs[#bufs+1] = [===[
         call Cheat("exec-lua:_luapath")
         call Cheat("exec-lua:_currentpath")
-        call Cheat("exec-lua:runtime")
+        call Cheat("exec-lua:ac")
         call Cheat("exec-lua:main")
     ]===]
     bufs[#bufs+1] = '//Lua 引擎结束'

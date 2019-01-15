@@ -3,6 +3,7 @@ ac.game = {}
 
 ac.test = pcall(require, 'currentpath')
 
+require 'ac.runtime'
 require 'ac.log'
 require 'ac.debugger'
 require 'ac.math'
