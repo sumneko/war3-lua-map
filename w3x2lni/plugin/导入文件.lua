@@ -17,7 +17,7 @@ local function scanDir(dir, callback)
     end
 end
 
-function mt:on_full(w2l)
+function mt:on_convert(w2l)
     -- TODO 如果是YDWE打开lni地图，则不执行以下代码
     if w2l.setting.mode == 'obj' and w2l.log_path:filename():string() == 'w3x2lni' then
         return
@@ -29,26 +29,23 @@ function mt:on_full(w2l)
         return
     end
 
-    --local basePath = w2l.setting.input / 'w3x2lni' / 'import'
-    --local baseLen = #basePath:string()
-    --scanDir(basePath, function (path)
-    --    local related = path:string():sub(baseLen + 2)
-    --    w2l:file_save('map', related, io.load(path))
-    --end)
-
     local basePath = 'w3x2lni\\import\\'
     local list = w2l.input_ar:list_file()
     local files = {}
     for _, name in ipairs(list) do
         if name:sub(1, #basePath):lower() == basePath then
             local buf = w2l.input_ar:get(name)
+            w2l.input_ar:remove(name)
+            files[name] = buf
             local newName = name:sub(#basePath+1)
-            files[newName] = buf
+            w2l.output_ar:set(newName, buf)
         end
     end
-    for name, buf in pairs(files) do
-        w2l:file_save('map', name, buf)
-        w2l:file_remove('map', basePath .. name)
+    for i = #list, 1, -1 do
+        local name = list[i]
+        if files[name] then
+            table.remove(list, i)
+        end
     end
 end
 
