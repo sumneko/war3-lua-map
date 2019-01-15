@@ -138,12 +138,10 @@ local function onCastStart(unit)
 end
 
 local function onSelected(unit, player)
-    print('选中单位', player, unit)
     player:eventNotify('玩家-选中单位', player, unit)
 end
 
 local function onDeselected(unit, player)
-    print('取消选中', player, unit)
     player:eventNotify('玩家-取消选中', player, unit)
 end
 
