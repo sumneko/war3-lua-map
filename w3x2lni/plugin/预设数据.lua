@@ -163,7 +163,7 @@ local function IdCreator(head)
         local c3 = index % #chars + 1
         local c2 = index // #chars % #chars + 1
         local c1 = index // #chars // #chars % #chars + 1
-        return head .. c1 .. c2 .. c3
+        return head .. chars:sub(c1, c1) .. chars:sub(c2, c2) .. chars:sub(c3, c3)
     end
 end
 
