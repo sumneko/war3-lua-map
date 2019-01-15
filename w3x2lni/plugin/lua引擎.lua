@@ -65,8 +65,10 @@ local function reduceFiles(w2l)
 end
 
 function mt:on_full(w2l)
-    if w2l.setting.mode == 'lni' or w2l.setting.remove_we_only then
+    if w2l.setting.mode == 'lni' then
         reduceFiles(w2l)
+    elseif w2l.setting.remove_we_only then
+        injectFiles(w2l)
     else
         local file_save = w2l.file_save
         function w2l:file_save(type, name, buf)

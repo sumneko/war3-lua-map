@@ -29,6 +29,7 @@ function mt:on_convert(w2l)
         return
     end
 
+    local needInsideLua = w2l.setting.remove_we_only
     local basePath = 'w3x2lni\\import\\'
     local list = w2l.input_ar:list_file()
     local files = {}
@@ -38,7 +39,7 @@ function mt:on_convert(w2l)
             w2l.input_ar:remove(name)
             files[name] = buf
             local newName = name:sub(#basePath+1)
-            if newName:sub(1, #'scripts\\') ~= 'scripts\\' then
+            if needInsideLua or newName:sub(1, #'scripts\\') ~= 'scripts\\' then
                 w2l.output_ar:set(newName, buf)
             end
         end
