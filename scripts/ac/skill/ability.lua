@@ -202,7 +202,7 @@ function mt:updateCost()
         return
     end
     self._cache.cost = cost
-    japi.EXSetAbilityDataReal(self:handle(), 1, 0x68, cost)
+    japi.EXSetAbilityDataInteger(self:handle(), 1, 0x68, cost)
 end
 
 function mt:updateAll()

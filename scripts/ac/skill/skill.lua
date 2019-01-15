@@ -381,15 +381,22 @@ end
 
 local function onCastStop(cast)
     local unit = cast._owner
+
+    if cast._stun then
+        cast._stun()
+    end
+
     callMethod(cast, 'onCastStop')
 end
 
 local function onCastFinish(cast)
+    local unit = cast._owner
+
     callMethod(cast, 'onCastFinish')
 
     local time = ac.toNumber(cast.castFinishTime)
     if time > 0 then
-        ac.wait(time, function ()
+        ac.wait(time * 1000, function ()
             onCastStop(cast)
         end)
     else
@@ -398,11 +405,13 @@ local function onCastFinish(cast)
 end
 
 local function onCastShot(cast)
+    local unit = cast._owner
+
     callMethod(cast, 'onCastShot')
 
     local time = ac.toNumber(cast.castShotTime)
     if time > 0 then
-        ac.wait(time, function ()
+        ac.wait(time * 1000, function ()
             onCastFinish(cast)
         end)
     else
@@ -411,11 +420,13 @@ local function onCastShot(cast)
 end
 
 local function onCastChannel(cast)
+    local unit = cast._owner
+
     callMethod(cast, 'onCastChannel')
 
     local time = ac.toNumber(cast.castChannelTime)
     if time > 0 then
-        ac.wait(time, function ()
+        ac.wait(time * 1000, function ()
             onCastShot(cast)
         end)
     else
@@ -427,12 +438,13 @@ local function onCastStart(cast)
     local unit = cast._owner
 
     unit:stopCast()
+    cast._stun = unit:addRestriction '硬直'
 
     callMethod(cast, 'onCastStart')
 
     local time = ac.toNumber(cast.castStartTime)
     if time > 0 then
-        ac.wait(time, function ()
+        ac.wait(time * 1000, function ()
             onCastChannel(cast)
         end)
     else

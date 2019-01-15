@@ -127,6 +127,7 @@ local function onCastStart(unit)
             local target = ac.unit(jass.GetSpellTargetUnit())
             local x = jass.GetSpellTargetX()
             local y = jass.GetSpellTargetY()
+            order(unit, 'stop')
             skill:castByClient(target, x, y)
         end
     end

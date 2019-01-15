@@ -216,7 +216,35 @@ function mt:add(k, v)
     if not self._attribute then
         return
     end
-    self._attribute:add(k, v)
+    return self._attribute:add(k, v)
+end
+
+function mt:addRestriction(k)
+    if not self._restriction then
+        return
+    end
+    return self._restriction:add(k)
+end
+
+function mt:removeRestriction(k)
+    if not self._restriction then
+        return
+    end
+    self._restriction:remove(k)
+end
+
+function mt:getRestriction(k)
+    if not self._restriction then
+        return 0
+    end
+    return self._restriction:get(k)
+end
+
+function mt:hasRestriction(k)
+    if not self._restriction then
+        return false
+    end
+    self._restriction:has(k)
 end
 
 function mt:isAlive()

@@ -20,6 +20,30 @@ unit:get(attributeName: string)
 ### add
 ```lua
 unit:add(attributeName: string, attributeValue: number)
+    -> destructor: function
+```
+
+### addRestriction
+```lua
+unit:addRestriction(restrictionName: string)
+    -> destructor: function
+```
+
+### removeRestriction
+```lua
+unit:removeRestriction(restrictionName: string)
+```
+
+### getRestriction
+```lua
+unit:getRestriction(restrictionName: string)
+    -> count: integer
+```
+
+### hasRestriction
+```lua
+unit:hasRestriction(restrictionName: string)
+    -> boolean
 ```
 
 ### isAlive

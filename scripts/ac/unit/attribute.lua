@@ -45,13 +45,25 @@ local Show = {
 
 local Set = {
     ['生命上限'] = function (attribute)
-        local rate = attribute:get '生命' / attribute:get '生命上限'
+        local max = attribute:get '生命上限'
+        local rate
+        if max <= 0.0 then
+            rate = 0.0
+        else
+            rate = attribute:get '生命' / max
+        end
         return function ()
             attribute:set('生命', rate * attribute:get '生命上限')
         end
     end,
     ['魔法上限'] = function (attribute)
-        local rate = attribute:get '魔法' / attribute:get '魔法上限'
+        local max = attribute:get '魔法上限'
+        local rate
+        if max <= 0.0 then
+            rate = 0.0
+        else
+            rate = attribute:get '魔法' / max
+        end
         return function ()
             attribute:set('魔法', rate * attribute:get '魔法上限')
         end
@@ -85,6 +97,8 @@ local Get = {
 
 local mt = {}
 mt.__index = mt
+
+mt.type = 'unit attribute'
 
 -- 设置固定值，会清除百分比部分
 function mt:set(k, v)
@@ -129,6 +143,14 @@ function mt:add(k, v)
         end
         self:onShow(k)
     end
+    local used
+    return function ()
+        if used then
+            return
+        end
+        used = true
+        self:add(k, -v)
+    end
 end
 
 function mt:onShow(k)
@@ -140,8 +162,12 @@ function mt:onShow(k)
     if v == s then
         return
     end
+    local unit = self._unit
+    if unit._removed then
+        return
+    end
     self._show[k] = v
-    Show[k](self._unit, v)
+    Show[k](unit, v)
 end
 
 function mt:onSet(k)
