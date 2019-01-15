@@ -12,6 +12,9 @@ function mt:on_full(w2l)
     if w2l.setting.mode == 'obj' and w2l.log_path:filename():string() == 'w3x2lni' then
         return
     end
+    if w2l.setting.mode == 'lni' then
+        return
+    end
     for type in pairs(w2l.info.lni) do
         for _, obj in pairs(w2l.slk[type]) do
             obj.w2lobject = nil

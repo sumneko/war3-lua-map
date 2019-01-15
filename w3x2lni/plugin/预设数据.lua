@@ -297,6 +297,9 @@ function mt:on_full(w2l)
     if w2l.setting.mode == 'obj' and w2l.log_path:filename():string() == 'w3x2lni' then
         return
     end
+    if w2l.setting.mode == 'lni' then
+        return
+    end
 
     unitInsert(w2l)
     abilityInsert(w2l)
