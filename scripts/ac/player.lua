@@ -10,12 +10,14 @@ local function create(id)
     if id < MIN_ID or id > MAX_ID then
         return nil
     end
+    local handle = jass.Player(id - 1)
     local player = setmetatable({
-        _handle = jass.Player(id - 1),
+        _handle = handle,
         _id = id,
         _hero = {}
     }, mt)
     All[id] = player
+    All[handle] = player
 
     return player
 end
@@ -89,8 +91,7 @@ end
 
 function ac.localPlayer()
     if not LocalPlayer then
-        local id = jass.GetPlayerId(jass.GetLocalPlayer()) + 1
-        LocalPlayer = ac.player(id)
+        LocalPlayer = ac.player(jass.GetLocalPlayer())
     end
     return LocalPlayer
 end

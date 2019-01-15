@@ -37,6 +37,9 @@ local function selectHero()
     if not hero then
         return
     end
+    if hero == getSelect() then
+        return
+    end
     ac.localPlayer():selectUnit(hero)
     LastSelectClock = ac.clock()
 end
