@@ -2,7 +2,8 @@ local jass = require 'jass.common'
 local japi = require 'jass.japi'
 local slk = require 'jass.slk'
 local dbg = require 'jass.debug'
-local attribute = require 'ac.attribute'
+local attribute = require 'ac.unit.attribute'
+local restriction = require 'ac.unit.restriction'
 local attack = require 'ac.attack'
 local mover = require 'ac.mover'
 local skill = require 'ac.skill'
@@ -160,7 +161,9 @@ function ac.unit(handle)
 
     if class == '生物' then
         -- 初始化单位属性
-        u.attribute = attribute(u, u._data.attribute)
+        u._attribute = attribute(u, u._data.attribute)
+        -- 初始化行为限制
+        u._restriction = restriction(u, u._data.restriction)
 
         ac.game:eventNotify('单位-初始化', u)
 
@@ -196,15 +199,24 @@ function mt:getName()
 end
 
 function mt:set(k, v)
-    self.attribute:set(k, v)
+    if not self._attribute then
+        return
+    end
+    self._attribute:set(k, v)
 end
 
 function mt:get(k)
-    return self.attribute:get(k)
+    if not self._attribute then
+        return 0.0
+    end
+    return self._attribute:get(k)
 end
 
 function mt:add(k, v)
-    self.attribute:add(k, v)
+    if not self._attribute then
+        return
+    end
+    self._attribute:add(k, v)
 end
 
 function mt:isAlive()
@@ -349,8 +361,8 @@ end
 function mt:stopCast()
 end
 
-function mt:event(name)
-    return ac.event_register(self, name)
+function mt:event(name, f)
+    return ac.eventRegister(self, name, f)
 end
 
 function mt:eventDispatch(name, ...)

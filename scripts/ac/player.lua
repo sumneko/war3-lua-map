@@ -59,8 +59,8 @@ function mt:selectUnit(unit)
     end
 end
 
-function mt:event(name)
-    return ac.event_register(self, name)
+function mt:event(name, f)
+    return ac.eventRegister(self, name, f)
 end
 
 function mt:eventDispatch(name, ...)
