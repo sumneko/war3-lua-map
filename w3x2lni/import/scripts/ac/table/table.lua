@@ -58,7 +58,7 @@ function mt:get_searcher(name)
     return result
 end
 
-mt:set_marco('TableSearcher', '$MapPath$table\\;$MapPath$ac\\table\\')
+mt:set_marco('TableSearcher', '$MapPath$table\\;$MapPath$ac\\table\\;$MapPath$..\\w3x2lni\\import\\scripts\\ac\\table\\')
 for _, path in ipairs(split(package.path, ';')) do
     local buf = storm.load(path:gsub('%?%.lua', 'table\\.iniconfig'))
     if buf then

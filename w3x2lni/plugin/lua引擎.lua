@@ -8,11 +8,11 @@ mt.info = {
 }
 
 local currentpath = [[
-package.path = package.path .. ';%s\scripts\?.lua;%s\scripts\?\init.lua'
+package.path = package.path .. ';%s\scripts\?.lua;%s\scripts\?\init.lua;%s\w3x2lni\import\scripts\?.lua;%s\w3x2lni\import\scripts\?\init.lua'
 ]]
 
 local luapath = [[
-package.path = package.path .. ';scripts\\?.lua;scripts\\?\\init.lua'
+package.path = package.path .. ';scripts\\?.lua;scripts\\?\\init.lua;w3x2lni\\import\\scripts\\?.lua;w3x2lni\\import\\scripts\\?\\init.lua'
 ]]
 
 local function injectJass(w2l, buf)
@@ -35,8 +35,9 @@ local function injectJass(w2l, buf)
 end
 
 local function injectFiles(w2l)
+    local input = w2l.setting.input:string()
     w2l:file_save('map', '_luapath.lua', luapath)
-    w2l:file_save('map', 'scripts\\_currentpath.lua', currentpath:format(w2l.setting.input:string(), w2l.setting.input:string()):gsub('\\', '\\\\'))
+    w2l:file_save('map', 'scripts\\_currentpath.lua', currentpath:format(input, input, input, input):gsub('\\', '\\\\'))
     local buf = injectJass(w2l, w2l:file_load('map', 'war3map.j'))
     if buf then
         w2l:file_save('map', 'war3map.j', buf)

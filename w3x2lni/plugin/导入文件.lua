@@ -38,7 +38,9 @@ function mt:on_convert(w2l)
             w2l.input_ar:remove(name)
             files[name] = buf
             local newName = name:sub(#basePath+1)
-            w2l.output_ar:set(newName, buf)
+            if newName:sub(1, #'scripts\\') ~= 'scripts\\' then
+                w2l.output_ar:set(newName, buf)
+            end
         end
     end
     for i = #list, 1, -1 do
