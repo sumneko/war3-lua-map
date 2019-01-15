@@ -30,12 +30,29 @@ local function newObject(slk, id, parent, level)
             new[k:lower()] = v
         end
 
+
+        if level then
+            for _, v in pairs(new) do
+                if type(v) == 'table' then
+                    if #v > level then
+                        for i = level + 1, #v do
+                            v[i] = nil
+                        end
+                    elseif #v < level then
+                        for i = #v + 1, level do
+                            v[i] = v[#v]
+                        end
+                    end
+                end
+            end
+        end
+
         slk[id] = new
     end
 end
 
 local function unitInsert(w2l)
-    newObject(w2l.slk.unit, '@DMY', 'ewsp'){
+    newObject(w2l.slk.unit, '@DMY', 'ewsp') {
         -- 可建造建筑
         Builds = "",
         -- 名字
@@ -86,7 +103,7 @@ local function unitInsert(w2l)
         upgrades = "",
     }
 
-    newObject(w2l.slk.unit, '@MVR', 'ewsp'){
+    newObject(w2l.slk.unit, '@MVR', 'ewsp') {
         -- 可建造建筑
         Builds = "",
         -- 名字
@@ -138,6 +155,125 @@ local function unitInsert(w2l)
     }
 end
 
+local function IdCreator(head)
+    local chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    local index = -1
+    return function ()
+        index = index + 1
+        local c3 = index % #chars + 1
+        local c2 = index // #chars % #chars + 1
+        local c1 = index // #chars // #chars % #chars + 1
+        return head .. c1 .. c2 .. c3
+    end
+end
+
+local function abilityInsert(w2l)
+    newObject(w2l.slk.ability, '@CMD', 'ANcl', 2) {
+        -- 效果 - 施法动作
+        Animnames = "",
+        -- 按钮位置 - 普通 (X)
+        Buttonpos_1 = 0,
+        -- 效果 - 施法者
+        CasterArt = "",
+        -- 施法持续时间
+        DataA = {0.0000, 0.0000},
+        -- 目标类型
+        DataB = {3, 3},
+        -- 选项
+        DataC = {1, 1},
+        -- 动作持续时间
+        DataD = {0.0000, 0.0000},
+        -- 使其他技能无效
+        DataE = {0, 0},
+        -- 基础命令ID
+        DataF = {
+        "robogoblin",
+        "robogoblin",
+        },
+        -- 效果 - 目标点
+        EffectArt = "",
+        -- 名字
+        Name = "CMD",
+        -- 施法距离
+        Rng = {0.0000, 0.0000},
+        -- 效果 - 目标
+        TargetArt = "",
+        -- 效果 - 目标附加点1
+        Targetattach = "",
+        -- 英雄技能
+        hero = 0,
+        -- 等级
+        levels = 2,
+    }
+
+    -- 通魔使用的命令字符串（共需要12个）
+    local orderList = {
+        'incineratearrowoff',
+        'incineratearrowon',
+        'incineratearrow',
+        'volcano',
+        'soulburn',
+        'lavamonster',
+        'transmute',
+        'healingspray',
+        'chemicalrage',
+        'acidbomb',
+        'summonfactory',
+        'unrobogoblin',
+    }
+
+    -- 分配ID
+    local nextId = IdCreator '$'
+
+    -- 为每个格子分配50个技能，共600个
+    local SIZE = 50
+    local i = 0
+    local slot = 0
+    for y = 2, 0, -1 do
+        for x = 0, 3 do
+            slot = slot + 1
+            for _ = 1, SIZE do
+                i = i + 1
+                local order = orderList[slot]
+                newObject(w2l.slk.ability, nextId(), 'ANcl', 2) {
+                    Name = '@主动技能-' .. tostring(slot),
+                    Buttonpos_1 = x,
+                    Buttonpos_2 = y,
+                    UnButtonpos_1 = x,
+                    UnButtonpos_2 = y,
+                    Researchbuttonpos_1 = x,
+                    Researchbuttonpos_2 = y,
+                    EffectArt = '',
+                    TargetArt = '',
+                    Targetattach = '',
+                    Animnames = '',
+                    CasterArt = '',
+                    hero = 0,
+                    levels = 2,
+                    DataA = {0, 0},
+                    DataB = {3, 3},
+                    DataC = {1, 1},
+                    DataD = {0, 0},
+                    DataE = {0, 0},
+                    DataF = {order, order},
+                    Rng = {0, 0},
+                }
+
+                newObject(w2l.slk.ability, nextId(), 'Amgl') {
+                    Name = '@被动技能-' .. tostring(slot),
+                    Buttonpos_1 = x,
+                    Buttonpos_2 = y,
+                    UnButtonpos_1 = x,
+                    UnButtonpos_2 = y,
+                    Researchbuttonpos_1 = x,
+                    Researchbuttonpos_2 = y,
+                    Requires = '',
+                }
+            end
+        end
+    end
+end
+
 local function unitDefault(w2l)
     -- 设置所有单位的默认数据
     for _, unit in pairs(w2l.slk.unit) do
@@ -163,6 +299,7 @@ function mt:on_full(w2l)
     end
 
     unitInsert(w2l)
+    abilityInsert(w2l)
 
     unitDefault(w2l)
 end
