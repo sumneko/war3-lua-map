@@ -8,11 +8,11 @@ mt.info = {
 }
 
 local currentpath = [[
-package.path = package.path .. ';%s\scripts\?.lua;%s\scripts\?\init.lua;%s\w3x2lni\import\scripts\?.lua;%s\w3x2lni\import\scripts\?\init.lua'
+package.path = package.path .. ';%s\scripts\?.lua;%s\scripts\?\init.lua;%s\w3x2lni\plugin\import\scripts\?.lua;%s\w3x2lni\plugin\import\scripts\?\init.lua'
 ]]
 
 local luapath = [[
-package.path = package.path .. ';scripts\\?.lua;scripts\\?\\init.lua;w3x2lni\\import\\scripts\\?.lua;w3x2lni\\import\\scripts\\?\\init.lua'
+package.path = package.path .. ';scripts\\?.lua;scripts\\?\\init.lua;w3x2lni\\plugin\\import\\scripts\\?.lua;w3x2lni\\plugin\\import\\scripts\\?\\init.lua'
 ]]
 
 local function injectJass(w2l, buf)

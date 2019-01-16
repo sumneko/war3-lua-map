@@ -30,7 +30,7 @@ function mt:on_convert(w2l)
     end
 
     local needInsideLua = w2l.setting.remove_we_only
-    local basePath = 'w3x2lni\\import\\'
+    local basePath = 'w3x2lni\\plugin\\import\\'
     local list = w2l.input_ar:list_file()
     local files = {}
     for _, name in ipairs(list) do
