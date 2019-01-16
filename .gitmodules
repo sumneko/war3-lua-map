@@ -2,3 +2,6 @@
 	path = tools/w3x2lni
 	url = https://github.com/sumneko/w3x2lni.git
 	branch = master
+[submodule "w3x2lni\\plugin"]
+	path = w3x2lni\\plugin
+	url = https://github.com/sumneko/War3-lua-map-plugin.git
