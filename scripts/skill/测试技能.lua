@@ -9,5 +9,9 @@ function mt:onRemove()
 end
 
 function mt:onCastShot()
+    local unit = self:getOwner()
     print('onCastShot')
+    unit:blink(self:getTarget())
+    unit:getOwner():moveCamera(self:getTarget(), 1)
+
 end
