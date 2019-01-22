@@ -13,5 +13,4 @@ function mt:onCastShot()
     print('onCastShot')
     unit:blink(self:getTarget())
     unit:getOwner():moveCamera(self:getTarget(), 1)
-
 end

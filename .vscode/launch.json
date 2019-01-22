@@ -9,7 +9,12 @@
             "ip": "127.0.0.1",
             "port": 4279,
             "preLaunchTask": "运行",
+            "sourceCoding": "utf8",
             "sourceMaps": [
+                [
+                    "scripts\\ac\\",
+                    "${workspaceRoot}\\w3x2lni\\plugin\\import\\scripts\\ac\\"
+                ],
                 [
                     "scripts\\",
                     "${workspaceRoot}\\scripts\\"
@@ -27,7 +32,12 @@
             "stopOnEntry": true,
             "ip": "127.0.0.1",
             "port": 4279,
+            "sourceCoding": "utf8",
             "sourceMaps": [
+                [
+                    "scripts\\ac\\",
+                    "${workspaceRoot}\\w3x2lni\\plugin\\import\\scripts\\ac\\"
+                ],
                 [
                     "scripts\\",
                     "${workspaceRoot}\\scripts\\"
