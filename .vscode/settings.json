@@ -1,6 +1,7 @@
 {
     "Lua.diagnostics.globals": [
-        "ac"
+        "ac",
+        "fs"
     ],
     "Lua.workspace.ignoreDir": ["tools/w3x2lni"]
 }
