@@ -70,7 +70,7 @@ while true do
         if id then
             if id == watch then
                 change = true
-            elseif id == guard and path == name then
+            elseif id == guard then
                 if watch and (type == 'delete' or type == 'rename from') then
                     fw.remove(watch)
                     watch = nil
