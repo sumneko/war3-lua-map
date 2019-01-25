@@ -3,5 +3,8 @@
         "ac",
         "fs"
     ],
-    "Lua.workspace.ignoreDir": ["tools/w3x2lni"]
+    "Lua.workspace.ignoreDir": [
+        "tools/w3x2lni"
+    ],
+    "Lua.workspace.ignoreSubmodules": false
 }
