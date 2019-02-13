@@ -17,10 +17,14 @@ function mt:onCastShot()
     print('===============')
     for _, u in ac.selector()
         : inRange(unit:getPoint(), 10000)
-        : of {'建筑', '英雄'}
-        : ofNot '测试'
+        : of {'建筑'}
         : ipairs()
     do
         print(u)
+        unit:damage {
+            target = u,
+            damage = 100,
+            skill = self,
+        }
     end
 end
