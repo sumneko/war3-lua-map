@@ -86,6 +86,17 @@
             ]
         },
         {
+            "label": "日志",
+            "command": "start ${workspaceRoot}/tools/w3x2lni/log/report.log",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "args": []
+        },
+        {
             "label": "🔍",
             "command": "chcp 65001 && \"${workspaceRoot}/tools/w3x2lni/bin/w3x2lni-lua.exe\" -e \"package.cpath=package.cpath..';'..[[${workspaceRoot}/tools/?.dll]]\"",
             "args": [
