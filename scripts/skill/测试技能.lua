@@ -14,6 +14,8 @@ function mt:onCastShot()
     unit:blink(self:getTarget())
     unit:getOwner():moveCamera(self:getTarget(), 1)
 
+    unit:add('生命上限', 1000)
+
     print('===============')
     for _, u in ac.selector()
         : inRange(unit:getPoint(), 10000)

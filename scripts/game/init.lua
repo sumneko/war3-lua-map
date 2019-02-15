@@ -48,8 +48,3 @@ local shop = ac.player(1):createShop('商店', ac.point(-500, -500), 0)
 shop:setItem('测试物品', 1)
 shop:setItem('测试物品', 4)
 shop:setItem('测试物品', 11)
-
-local shop2 = ac.player(2):createShop('商店', ac.point(-500, -500), 0)
-shop2:setItem('测试物品', 3)
-shop2:setItem('测试物品', 7)
-shop2:setItem('测试物品', 10)
