@@ -41,10 +41,10 @@ ac.player(1):add('食物', 10)
 ac.player(1):add('食物上限', 20)
 
 ac.loop(0.1, function ()
-    ac.player(1):add('金币', 10)
+    ac.player(1):add('金币', 100)
 end)
 
-local shop = ac.player(1):createShop('商店', ac.point(-500, -500), 0)
+local shop = ac.player(16):createShop('商店', ac.point(-500, -500), 0)
 shop:setItem('测试物品', 1)
 shop:setItem('测试物品', 4)
 shop:setItem('测试物品', 11)

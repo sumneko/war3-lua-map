@@ -16,6 +16,9 @@ function mt:onCastShot()
 
     unit:add('生命上限', 1000)
 
+    unit:userData('测试', 111)
+    print(unit:userData '测试')
+
     print('===============')
     for _, u in ac.selector()
         : inRange(unit:getPoint(), 10000)
