@@ -8,28 +8,29 @@ function mt:onRemove()
     print('失去：', self)
 end
 
+local count = 0
+
 function mt:onCastShot()
     local unit = self:getOwner()
     print('onCastShot', unit:currentSkill())
-    unit:blink(self:getTarget())
-    unit:getOwner():moveCamera(self:getTarget(), 1)
 
-    unit:add('生命上限', 1000)
+    local jass = require 'jass.common'
+    local japi = require 'jass.japi'
+    count = count + 1
+    if count == 1 then
+        unit:bagSize(6)
+    elseif count == 2 then
+        unit:bagSize(1)
+    elseif count == 3 then
+        unit:bagSize(0)
+    elseif count == 4 then
+        unit:bagSize(3)
+    end
 
-    unit:userData('测试', 111)
-    print(unit:userData '测试')
-
-    print('===============')
     for _, u in ac.selector()
-        : inRange(unit:getPoint(), 10000)
-        : of {'建筑'}
+        : inLine(unit, unit:getPoint() * self:getTarget(), unit:getPoint() / self:getTarget(), 500)
         : ipairs()
     do
         print(u)
-        unit:damage {
-            target = u,
-            damage = 100,
-            skill = self,
-        }
     end
 end
