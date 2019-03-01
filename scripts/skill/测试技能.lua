@@ -13,10 +13,15 @@ local count = 0
 function mt:onCastShot()
     local unit = self:getOwner()
     local target = self:getTarget()
-    print('onCastShot', unit:currentSkill())
+    print('onCastShot', target)
 
-    unit:addBuff '测试1' {}
-    unit:addBuff '测试2' {}
+    for _, item in ac.selector()
+        : mode '物品'
+        : inRange(unit, 400)
+        : ipairs()
+    do
+        print(item)
+    end
 end
 
 local mt = ac.buff['测试1']
