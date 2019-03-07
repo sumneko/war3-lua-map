@@ -24,7 +24,7 @@ ac.player(1):add('食物上限', 20)
 
 local message = require 'jass.message'
 ac.loop(0.1, function ()
-    ac.player(1):add('金币', 100)
+    ac.player(1):add('金币', 1000)
 end)
 
 local unit = ac.player(16):createUnit('商店', ac.point(-500, -500), 0)
@@ -37,22 +37,15 @@ local mt = ac.item['测试物品']
 
 function mt:onAdd()
     print('add item')
-    ac.loop(1, function ()
-        self:stack(self:stack() + 1)
-    end)
+    self:stack(1)
 end
 
 function mt:onRemove()
     print('remove item')
 end
 
-function mt:onCanBuy(...)
-    print(...)
-    return true
-end
-
-function mt:onCanAdd(...)
-    print(...)
+function mt:onCanLoot()
+    print('onCanLoot')
     return true
 end
 
@@ -60,8 +53,13 @@ local mt = ac.skill['测试物品']
 
 function mt:onAdd()
     print('add skill')
+    print(self)
 end
 
 function mt:onRemove()
     print('remove skill')
+end
+
+function mt:onCastShot()
+    print('onCastShot')
 end

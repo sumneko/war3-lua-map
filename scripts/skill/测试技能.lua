@@ -10,18 +10,19 @@ end
 
 local count = 0
 
+function mt:onCanCast()
+    print('onCanCast')
+    return false
+end
+
 function mt:onCastShot()
     local unit = self:getOwner()
     local target = self:getTarget()
     print('onCastShot', target)
+end
 
-    for _, item in ac.selector()
-        : mode '物品'
-        : inRange(unit, 400)
-        : ipairs()
-    do
-        print(item)
-    end
+function mt:onRemove()
+    print('onRemove', self._lockEvent)
 end
 
 local mt = ac.buff['测试1']
@@ -33,6 +34,8 @@ mt.description = '测试状态的描述'
 
 function mt:onAdd()
     print('获得状态：', self)
+    self:remove()
+    print('after remove')
 end
 
 function mt:onRemove()
